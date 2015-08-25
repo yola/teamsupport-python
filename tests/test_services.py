@@ -28,7 +28,6 @@ class TestBaseXMLClient(PatchedSessionXmlTests):
 
     def test_send_as_xml_properly_formats_request(self):
         request_params = {
-            'cdata': {'Field2URL': "<a href='https://localhost/test'>test<a>"},
             'data': {'Field1': 'Test field'},
             'root': 'OuterField',
             'send_as_xml': True
@@ -37,9 +36,6 @@ class TestBaseXMLClient(PatchedSessionXmlTests):
         root_element = etree.Element('OuterField')
         sub_element = etree.SubElement(root_element, 'Field1')
         sub_element.text = 'Test field'
-        sub_element = etree.SubElement(root_element, 'Field2URL')
-        sub_element.text = etree.CDATA(
-            "<a href='https://localhost/test'>test<a>")
         xml_string = etree.tostring(
             root_element, encoding='utf-8', xml_declaration=True,
             pretty_print=True)

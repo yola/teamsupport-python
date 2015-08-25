@@ -10,16 +10,13 @@ from teamsupport.utils import to_xml
 
 class XMLHTTPServiceClient(HTTPServiceClient):
     def _format_xml_request(self, request_params):
-        data_set = (
-            request_params.get('data') is not None or
-            request_params.get('cdata') is not None)
+        data_set = request_params.get('data') is not None
         if request_params.get('send_as_xml') and data_set:
             data = request_params['data']
             if not isinstance(data, etree._Element):
                 data = to_xml(
                     request_params['root'],
-                    request_params.get('data'),
-                    request_params.get('cdata'))
+                    request_params.get('data'))
             request_params['data'] = etree.tostring(
                 data, encoding='utf-8', xml_declaration=True,
                 pretty_print=True)
@@ -51,10 +48,9 @@ class TeamSupportService(XMLHTTPServiceClient):
         content = self.parse_xml_response(response)
         return content
 
-    def create_ticket(self, data, cdata=None):
+    def create_ticket(self, data):
         response = self.post(
-            'Tickets/', root='Ticket', data=data, cdata=cdata,
-            send_as_xml=True)
+            'Tickets/', root='Ticket', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
     def get_ticket(self, ticket_id):
@@ -64,7 +60,7 @@ class TeamSupportService(XMLHTTPServiceClient):
     def delete_ticket(self, ticket_id):
         self.delete('Tickets/{0}'.format(ticket_id))
 
-    def update_ticket(self, ticket_id, data, cdata=None):
+    def update_ticket(self, ticket_id, data):
         response = self.put(
             'Tickets/{0}'.format(ticket_id), data=data, send_as_xml=True)
         return self.parse_xml_response(response)
@@ -78,7 +74,7 @@ class TeamSupportService(XMLHTTPServiceClient):
             'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
         return self.parse_xml_response(response)
 
-    def update_ticket_action(self, ticket_id, action_id, data, cdata=None):
+    def update_ticket_action(self, ticket_id, action_id, data):
         response = self.put(
             'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
             root='Action', data=data, send_as_xml=True)
