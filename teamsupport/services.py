@@ -10,8 +10,10 @@ from teamsupport.utils import to_xml
 
 class XMLHTTPServiceClient(HTTPServiceClient):
     def _format_xml_request(self, request_params):
-        if request_params.get('send_as_xml') and (
-                request_params.get('data') or request_params.get('cdata')):
+        data_set = (
+            request_params.get('data') is not None or
+            request_params.get('cdata') is not None)
+        if request_params.get('send_as_xml') and data_set:
             data = request_params['data']
             if not isinstance(data, etree._Element):
                 data = to_xml(
