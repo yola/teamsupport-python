@@ -2,10 +2,10 @@
 # -*- coding: utf-8 -*-
 
 """
-test_integration
+integration_tests.test_services
 ----------------------------------
 
-Integration tests for the whole client
+Integration tests for the client
 """
 import unittest
 

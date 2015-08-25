@@ -12,10 +12,12 @@ class XMLHTTPServiceClient(HTTPServiceClient):
     def _format_xml_request(self, request_params):
         if request_params.get('send_as_xml') and (
                 request_params.get('data') or request_params.get('cdata')):
-            data = to_xml(
-                request_params['root'],
-                request_params.get('data'),
-                request_params.get('cdata'))
+            data = request_params['data']
+            if not isinstance(data, etree._Element):
+                data = to_xml(
+                    request_params['root'],
+                    request_params.get('data'),
+                    request_params.get('cdata'))
             request_params['data'] = etree.tostring(
                 data, encoding='utf-8', xml_declaration=True,
                 pretty_print=True)
