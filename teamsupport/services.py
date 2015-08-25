@@ -36,10 +36,10 @@ class XMLHTTPServiceClient(HTTPServiceClient):
 
 
 class TeamSupportService(XMLHTTPServiceClient):
-    def __init__(self, org_id, auth_token, url=None, **kwargs):
-        url = url or 'https://app.teamsupport.com/api/xml/'
+    def __init__(self, org_id, auth_token, **kwargs):
         super(TeamSupportService, self).__init__(
-            url, auth=(org_id, auth_token), **kwargs)
+            url='https://app.teamsupport.com/api/xml/',
+            auth=(org_id, auth_token), **kwargs)
         self.org_id = org_id
         self.auth_token = auth_token
 
