@@ -7,4 +7,4 @@ __author__ = 'Yola Engineers'
 __email__ = 'engineers@yola.com'
 __version__ = '0.1.0'
 
-__all__ = (TeamSupportService)
+__all__ = (TeamSupportService,)
