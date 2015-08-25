@@ -12,15 +12,10 @@ import unittest
 from lxml import etree
 
 from teamsupport.services import XMLHTTPServiceClient
-from tests import PatchedSessionTests
+from tests import PatchedSessionXmlTests
 
 
-class PatchedSessionXMLTests(PatchedSessionTests):
-    def assertEqualXML(self, first, second, msg=None):
-        self.assertEqual(etree.tostring(first), etree.tostring(second), msg)
-
-
-class TestBaseXMLClient(PatchedSessionXMLTests):
+class TestBaseXMLClient(PatchedSessionXmlTests):
 
     def setUp(self):
         super(TestBaseXMLClient, self).setUp()
@@ -29,7 +24,7 @@ class TestBaseXMLClient(PatchedSessionXMLTests):
     def test_parse_xml_response_returns_element(self):
         self.response.content = '<Tickets></Tickets>'
         result = self.client.parse_xml_response(self.response)
-        self.assertEqualXML(result, etree.Element('Tickets'))
+        self.assertEqualXml(result, etree.Element('Tickets'))
 
     def test_send_as_xml_properly_formats_request(self):
         request_params = {
