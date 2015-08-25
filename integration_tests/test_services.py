@@ -9,8 +9,8 @@ Integration tests for the client
 """
 import unittest
 
-from teamsupport import TeamSupportService
 from integration_tests import config
+from teamsupport import TeamSupportService
 
 
 class CleanedUpTicket(object):
