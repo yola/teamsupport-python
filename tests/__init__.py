@@ -7,6 +7,8 @@ from lxml import etree
 from mock import Mock, patch
 from requests import Response, Session
 
+from teamsupport.services import TeamSupportService
+
 
 class PatchedSessionTests(unittest.TestCase):
     def setUp(self):
@@ -34,3 +36,12 @@ class XmlTestCase(unittest.TestCase):
 
 class PatchedSessionXmlTests(PatchedSessionTests, XmlTestCase):
     pass
+
+
+class BaseTeamSupportServiceCase(PatchedSessionXmlTests):
+    def setUp(self):
+        super(BaseTeamSupportServiceCase, self).setUp()
+        self.client = TeamSupportService('org-id', 'auth-key')
+
+    def tearDown(self):
+        super(BaseTeamSupportServiceCase, self).tearDown()
