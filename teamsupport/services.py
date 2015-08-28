@@ -13,16 +13,13 @@ class XMLHTTPServiceClient(HTTPServiceClient):
         data_set = request_params.get('data') is not None
         if request_params.get('send_as_xml') and data_set:
             data = request_params['data']
-            if not isinstance(data, etree._Element):
-                data = to_xml(
-                    request_params['root'],
-                    request_params.get('data'))
+            if isinstance(data, dict):
+                data = to_xml(request_params['root'], data)
             request_params['data'] = etree.tostring(
                 data, encoding='utf-8', xml_declaration=True,
                 pretty_print=True)
-            request_params.setdefault('headers', {})['Content-Type'] = (
-                'application/xml'
-            )
+            request_params.setdefault('headers', {})
+            request_params['headers']['Content-Type'] = 'application/xml'
         return request_params
 
     def pre_send(self, request_params):
