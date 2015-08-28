@@ -8,12 +8,12 @@ Python library for interfacing with the TeamSupport XML API, using
 [demands](https://github.com/yola/demands).
 
 * Free software: MIT license
-* Documentation: https://teamsupport-python.readthedocs.org.
 
 ## Features
 
 * Client methods parse response content in order to return LXML Element objects
 * Converting Python dictionaries into XML for POST and PUT calls
+* Simple models for Tickets and Actions.
 
 ## Usage
 
