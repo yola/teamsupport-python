@@ -1,5 +1,6 @@
 from property_caching import cached_property
 
+from teamsupport.errors import MissingArgumentError
 
 
 class Ticket(object):
@@ -9,7 +10,7 @@ class Ticket(object):
         if ticket_id:
             self._data = self.client.get_ticket(ticket_id)
         elif not (ticket_id or data):
-            raise TypeError(
+            raise MissingArgumentError(
                 "__init__() needs either a 'ticket_id' or 'data' argument "
                 "(neither given)")
         self.id = self.TicketID
@@ -40,7 +41,7 @@ class Action(object):
         if action_id and ticket_id:
             self._data = self.client.get_ticket_action(ticket_id, action_id)
         elif not (ticket_id and action_id) and not data:
-            raise TypeError(
+            raise MissingArgumentError(
                 "__init__() needs either both a 'ticket_id' and 'action_id' "
                 "or a 'data' argument (neither given)")
         self.ticket_id = self.TicketID

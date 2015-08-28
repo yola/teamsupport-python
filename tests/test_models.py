@@ -11,6 +11,7 @@ import unittest
 
 from lxml import etree
 
+from teamsupport.errors import MissingArgumentError
 from teamsupport.models import Action, Ticket
 from tests import BaseTeamSupportServiceCase
 
@@ -29,7 +30,7 @@ class TestTicket(BaseTeamSupportServiceCase):
         self.assertEqual(ticket.id, 'ID')
 
     def test_initialisation_fails_when_missing_args(self):
-        self.assertRaises(TypeError, Ticket, self.client)
+        self.assertRaises(MissingArgumentError, Ticket, self.client)
 
     def test_getattr(self):
         ticket_element = etree.fromstring("""<Ticket>
@@ -83,9 +84,11 @@ class TestAction(BaseTeamSupportServiceCase):
         self.assertEqual(action.id, 'ActionID')
 
     def test_initialisation_fails_when_missing_args(self):
-        self.assertRaises(TypeError, Action, self.client)
-        self.assertRaises(TypeError, Action, self.client, ticket_id='ID')
-        self.assertRaises(TypeError, Action, self.client, action_id='ActionID')
+        self.assertRaises(MissingArgumentError, Action, self.client)
+        self.assertRaises(MissingArgumentError, Action, self.client,
+                          ticket_id='ID')
+        self.assertRaises(MissingArgumentError, Action, self.client,
+                          action_id='ActionID')
 
 
 if __name__ == '__main__':
