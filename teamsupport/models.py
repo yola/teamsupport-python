@@ -1,20 +1,18 @@
 from property_caching import cached_property
 
 
-class Ticket(object):
-    _data = None
 
+class Ticket(object):
     def __init__(self, client, ticket_id=None, data=None):
         self.client = client
-        if data is not None:
-            self._data = data
-            self.id = data.find('TicketID').text
-        elif ticket_id:
-            self.id = ticket_id
+        self._data = data
+        if ticket_id:
+            self._data = self.client.get_ticket(ticket_id)
         elif not (ticket_id or data):
             raise TypeError(
                 "__init__() needs either a 'ticket_id' or 'data' argument "
                 "(neither given)")
+        self.id = self.TicketID.text
 
     def __getattr__(self, name):
         if self.data.find(name) is not None:
@@ -23,8 +21,6 @@ class Ticket(object):
 
     @property
     def data(self):
-        if self._data is None:
-            self._data = self.client.get_ticket(self.id)
         return self._data
 
     @cached_property
@@ -38,21 +34,17 @@ class Ticket(object):
 
 
 class Action(object):
-    data = None
-
     def __init__(self, client, ticket_id=None, action_id=None, data=None):
         self.client = client
-        if data is not None:
-            self._data = data
-            self.ticket_id = data.find('TicketID').text
-            self.id = data.find('ID').text
-        elif action_id and ticket_id:
-            self.ticket_id = ticket_id
-            self.id = action_id
+        self._data = data
+        if action_id and ticket_id:
+            self._data = self.client.get_ticket_action(ticket_id, action_id)
         elif not (ticket_id and action_id) and not data:
             raise TypeError(
                 "__init__() needs either both a 'ticket_id' and 'action_id' "
                 "or a 'data' argument (neither given)")
+        self.ticket_id = self.TicketID.text
+        self.id = self.ID.text
 
     def __getattr__(self, name):
         if self.data.find(name) is not None:
@@ -61,6 +53,4 @@ class Action(object):
 
     @property
     def data(self):
-        if self._data is None:
-            self._data = self.client.get_ticket_action(self.ticket_id, self.id)
         return self._data

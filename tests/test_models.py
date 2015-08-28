@@ -17,6 +17,8 @@ from tests import BaseTeamSupportServiceCase
 
 class TestTicket(BaseTeamSupportServiceCase):
     def test_initialisation_with_id(self):
+        self.response.content = """<Ticket><TicketID>ID</TicketID></Ticket>"""
+
         ticket = Ticket(self.client, ticket_id='ID')
         self.assertEqual(ticket.id, 'ID')
 
@@ -59,6 +61,12 @@ class TestTicket(BaseTeamSupportServiceCase):
 
 class TestAction(BaseTeamSupportServiceCase):
     def test_initialisation_with_ids(self):
+        self.response.content = """<Action>
+                <ID>ActionID</ID>
+                <TicketID>ID</TicketID>
+                <Name>Description</Name>
+            </Action>"""
+
         action = Action(self.client, ticket_id='ID', action_id='ActionID')
         self.assertEqual(action.ticket_id, 'ID')
         self.assertEqual(action.id, 'ActionID')
