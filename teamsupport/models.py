@@ -12,11 +12,11 @@ class Ticket(object):
             raise TypeError(
                 "__init__() needs either a 'ticket_id' or 'data' argument "
                 "(neither given)")
-        self.id = self.TicketID.text
+        self.id = self.TicketID
 
     def __getattr__(self, name):
         if self.data.find(name) is not None:
-            return self.data.find(name)
+            return self.data.find(name).text
         raise AttributeError(name)
 
     @property
@@ -43,12 +43,12 @@ class Action(object):
             raise TypeError(
                 "__init__() needs either both a 'ticket_id' and 'action_id' "
                 "or a 'data' argument (neither given)")
-        self.ticket_id = self.TicketID.text
-        self.id = self.ID.text
+        self.ticket_id = self.TicketID
+        self.id = self.ID
 
     def __getattr__(self, name):
         if self.data.find(name) is not None:
-            return self.data.find(name)
+            return self.data.find(name).text
         raise AttributeError(name)
 
     @property

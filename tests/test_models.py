@@ -36,7 +36,7 @@ class TestTicket(BaseTeamSupportServiceCase):
                 <TicketID>ID</TicketID><Field2>Test</Field2>
             </Ticket>""")
         ticket = Ticket(self.client, data=ticket_element)
-        self.assertEqual(ticket.Field2.text, 'Test')
+        self.assertEqual(ticket.Field2, 'Test')
 
     def test_actions_property(self):
         self.response.content = """<Actions>
@@ -56,7 +56,7 @@ class TestTicket(BaseTeamSupportServiceCase):
         self.assertIsInstance(actions[0], Action)
         self.assertEqual(actions[0].id, 'ActionID')
         self.assertEqual(actions[0].ticket_id, 'ID')
-        self.assertEqual(actions[0].Name.text, 'Description')
+        self.assertEqual(actions[0].Name, 'Description')
 
 
 class TestAction(BaseTeamSupportServiceCase):
