@@ -19,6 +19,7 @@ Usage
 -----
 
 ::
+    from teamsupport.services import TeamSupportService
 
     client = TeamSupportService(TEAMSUPPORT_ORG_ID, TEAMSUPPORT_AUTH_KEY)
 
@@ -28,6 +29,12 @@ Usage
     # Update description of a ticket
     client.update_ticket_action(
         ticket_id, action_id, data={'Description': 'New description'})
+
+    # Get an action using the model
+    from teamsupport.models import Action
+    action =  Action(client, ticket_id, action_id)
+
+    print(action.Description)  # Prints 'New description'
 
 .. |Build Status| image:: https://img.shields.io/travis/yola/teamsupport-python.svg?style=flat-square
    :target: https://travis-ci.org/yola/teamsupport-python
