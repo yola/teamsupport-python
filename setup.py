@@ -1,7 +1,16 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import ast
+import re
+
 from setuptools import setup
+
+_version_re = re.compile(r'__version__\s+=\s+(.*)')
+
+with open('teamsupport/__init__.py', 'rb') as f:
+    version = str(ast.literal_eval(_version_re.search(
+        f.read().decode('utf-8')).group(1)))
 
 with open('README.rst') as readme_file:
     readme = readme_file.read()
@@ -22,7 +31,7 @@ test_requirements = [
 
 setup(
     name='teamsupport',
-    version='0.1.0',
+    version=version,
     description='Python library for interfacing with the TeamSupport API',
     long_description=readme + '\n\n' + changelog,
     author='Yola Engineers',
