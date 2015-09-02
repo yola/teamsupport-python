@@ -1,8 +1,5 @@
 *.py[cod]
 
-# C extensions
-*.so
-
 # Packages
 *.egg
 *.egg-info
@@ -22,25 +19,7 @@ lib64
 pip-log.txt
 
 # Unit test / coverage reports
-.coverage
 .tox
-nosetests.xml
-htmlcov
 
 # Integration test configuration
 integration_tests/config.py
-
-# Translations
-*.mo
-
-# Mr Developer
-.mr.developer.cfg
-.project
-.pydevproject
-
-# Complexity
-output/*.html
-output/*/index.html
-
-# Sphinx
-docs/_build
