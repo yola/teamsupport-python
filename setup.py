@@ -3,11 +3,11 @@
 
 from setuptools import setup
 
-with open('README.md') as readme_file:
+with open('README.rst') as readme_file:
     readme = readme_file.read()
 
-with open('CHANGELOG.md') as changelog_file:
-    changelog = changelog_file.read().replace('# Changelog', '')
+with open('CHANGELOG.rst') as changelog_file:
+    changelog = changelog_file.read()
 
 requirements = [
     'demands',
