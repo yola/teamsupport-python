@@ -5,7 +5,7 @@ Python TeamSupport Client
 
 Python library for interfacing with the TeamSupport XML API, using `demands <https://github.com/yola/demands>`__.
 
--  Free software: MIT license
+Free software: MIT license
 
 Features
 --------
