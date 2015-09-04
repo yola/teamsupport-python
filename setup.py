@@ -21,11 +21,11 @@ with open('CHANGELOG.rst') as changelog_file:
 requirements = [
     'demands',
     'lxml',
+    'property-caching',
 ]
 
 test_requirements = [
     'mock',
-    'property-caching',
     'querylist',
 ]
 
