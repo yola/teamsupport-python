@@ -18,14 +18,14 @@ from tests import BaseTeamSupportServiceCase
 
 class TestTicket(BaseTeamSupportServiceCase):
     def test_initialisation_with_id(self):
-        self.response.content = """<Ticket><TicketID>ID</TicketID></Ticket>"""
+        self.response.content = '<Ticket><TicketID>ID</TicketID></Ticket>'
 
         ticket = Ticket(self.client, ticket_id='ID')
         self.assertEqual(ticket.id, 'ID')
 
     def test_initialisation_with_data(self):
         ticket_element = etree.fromstring(
-            """<Ticket><TicketID>ID</TicketID></Ticket>""")
+            '<Ticket><TicketID>ID</TicketID></Ticket>')
         ticket = Ticket(self.client, data=ticket_element)
         self.assertEqual(ticket.id, 'ID')
 
@@ -49,7 +49,7 @@ class TestTicket(BaseTeamSupportServiceCase):
         </Actions>"""
 
         ticket_element = etree.fromstring(
-            """<Ticket><TicketID>ID</TicketID></Ticket>""")
+            '<Ticket><TicketID>ID</TicketID></Ticket>')
         ticket = Ticket(self.client, data=ticket_element)
 
         actions = ticket.actions
