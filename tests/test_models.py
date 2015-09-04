@@ -59,6 +59,25 @@ class TestTicket(BaseTeamSupportServiceCase):
         self.assertEqual(actions[0].ticket_id, 'ID')
         self.assertEqual(actions[0].Name, 'Description')
 
+    def test_actions_querylist(self):
+        self.response.content = """<Actions>
+                <Action>
+                    <ID>ActionID</ID>
+                    <TicketID>ID</TicketID>
+                    <Name>Description</Name>
+                </Action>
+            </Actions>"""
+
+        ticket_element = etree.fromstring(
+            '<Ticket><TicketID>ID</TicketID></Ticket>')
+        ticket = Ticket(self.client, data=ticket_element)
+
+        actions = ticket.actions
+        description_action = actions.get(Name='Description')
+        self.assertIsInstance(description_action, Action)
+        self.assertEqual(description_action.id, 'ActionID')
+        self.assertEqual(description_action.ticket_id, 'ID')
+
 
 class TestAction(BaseTeamSupportServiceCase):
     def test_initialisation_with_ids(self):

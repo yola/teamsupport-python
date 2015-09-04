@@ -22,11 +22,11 @@ requirements = [
     'demands',
     'lxml',
     'property-caching',
+    'querylist',
 ]
 
 test_requirements = [
     'mock',
-    'querylist',
 ]
 
 setup(

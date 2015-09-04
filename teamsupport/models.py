@@ -1,4 +1,5 @@
 from property_caching import cached_property
+from querylist import QueryList
 
 from teamsupport.errors import MissingArgumentError
 
@@ -23,11 +24,11 @@ class Ticket(object):
     @cached_property
     def actions(self):
         actions = self.client.get_ticket_actions(self.id)
-        return [
+        return QueryList([
             Action(
                 client=self.client, data=action
             ) for action in actions.findall('Action')
-        ]
+        ], wrap=False)
 
 
 class Action(object):
