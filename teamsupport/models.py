@@ -13,7 +13,7 @@ class Ticket(object):
         elif not self.data:
             raise MissingArgumentError(
                 "__init__() needs either a 'ticket_id' or 'data' argument "
-                "(neither given)")
+                '(neither given)')
         self.id = self.TicketID
 
     def __getattr__(self, name):
