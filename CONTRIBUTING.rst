@@ -55,34 +55,26 @@ Ready to contribute? Here's how to set up ``teamsupport-python`` for
 local development.
 
 #. Fork the ``teamsupport-python`` repo on GitHub.
-#. Clone your fork locally:
-
-   ::
+#. Clone your fork locally::
 
        $ git clone git@github.com:your_name_here/teamsupport-python.git
 
 #. Install your local copy into a virtualenv. This is how you set up
-   your fork for local development:
-
-   ::
+   your fork for local development::
 
        $ cd teamsupport-python/
        $ mkvirtualenv virtualenv
        $ . virtualenv/bin/activate
        $ python setup.py develop
 
-#. Create a branch for local development:
-
-   ::
+#. Create a branch for local development::
 
        $ git checkout -b name-of-your-bugfix-or-feature
 
 Now you can make your changes locally.
 
 #. When you're done making changes, check that your changes pass flake8
-   and the tests, including testing other Python versions with tox:
-
-   ::
+   and the tests, including testing other Python versions with tox::
 
        $ flake8 teamsupport tests
        $ python setup.py test
@@ -90,9 +82,7 @@ Now you can make your changes locally.
 
 To get flake8 and tox, just pip install them into your virtualenv.
 
-#. Commit your changes and push your branch to GitHub:
-
-   ::
+#. Commit your changes and push your branch to GitHub::
 
        $ git add .
        $ git commit -m "Your detailed description of your changes."
@@ -112,9 +102,7 @@ Before you submit a pull request, check that it meets these guidelines:
 Tips
 ----
 
-To run a subset of tests:
-
-::
+To run a subset of tests::
 
     $ python -m unittest tests.test_services
 
@@ -123,8 +111,6 @@ To run integration tests:
 
 #. Copy ``config.py.sample`` to ``config.py`` and edit your authentication details for TeamSupport.
 
-#. Run the tests:
-
-   ::
+#. Run the tests::
 
        $ python -m unittest discover -s integration_tests
