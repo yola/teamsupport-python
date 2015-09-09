@@ -19,14 +19,16 @@ with open('CHANGELOG.rst') as changelog_file:
     changelog = changelog_file.read()
 
 requirements = [
-    'demands',
-    'lxml',
-    'property-caching',
-    'querylist',
+    'demands>=1.1.0',
+    'lxml>=3.4.4',
+    'property-caching>=1.0.3',
+    'querylist>=0.2.0',
 ]
 
 test_requirements = [
-    'mock',
+    'mock>=1.2.0',
+    # Not explicitly required by mock 1.2.0
+    'funcsigs',
 ]
 
 setup(
