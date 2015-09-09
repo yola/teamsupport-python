@@ -4,6 +4,7 @@ import inspect
 import unittest
 
 from lxml import etree
+from lxml.builder import E
 from mock import Mock, patch
 from requests import Response, Session
 
@@ -12,6 +13,7 @@ from teamsupport.services import TeamSupportService
 
 class PatchedSessionTests(unittest.TestCase):
     def setUp(self):
+        super(PatchedSessionTests, self).setUp()
         # must patch inspect since it is used on Session.request, and when
         # Session.request is mocked, inspect blows up
         self.request_args = inspect.getargspec(Session.request)
@@ -30,6 +32,14 @@ class PatchedSessionTests(unittest.TestCase):
 
 
 class XmlTestCase(unittest.TestCase):
+    def setUp(self):
+        super(XmlTestCase, self).setUp()
+        self.xml_element = E.OuterField(
+            E.Field1('Test field'))
+        self.xml_element_string = etree.tostring(
+            self.xml_element, encoding='utf-8', xml_declaration=True,
+            pretty_print=True)
+
     def assertEqualXml(self, first, second, msg=None):
         self.assertEqual(etree.tostring(first), etree.tostring(second), msg)
 

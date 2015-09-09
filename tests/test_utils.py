@@ -9,8 +9,6 @@ Tests for `teamsupport.utils` module.
 """
 import unittest
 
-from lxml.builder import E
-
 from teamsupport.utils import to_xml
 from tests import XmlTestCase
 
@@ -26,10 +24,7 @@ class TestToXml(XmlTestCase):
         }
         result = to_xml(**params)
 
-        root_element = E.OuterField(
-            E.Field1('Test field'))
-
-        self.assertEqualXml(result, root_element)
+        self.assertEqualXml(result, self.xml_element)
 
     def tearDown(self):
         super(TestToXml, self).tearDown()

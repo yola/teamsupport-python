@@ -9,7 +9,6 @@ Tests for `teamsupport.services` module.
 """
 import unittest
 
-from lxml import etree
 from lxml.builder import E
 
 from teamsupport.services import XMLHTTPServiceClient
@@ -35,32 +34,19 @@ class TestBaseXMLClient(PatchedSessionXmlTests):
         }
         request_params = self.client._format_xml_request(request_params)
 
-        root_element = E.OuterField(
-            E.Field1('Test field'))
-        xml_string = etree.tostring(
-            root_element, encoding='utf-8', xml_declaration=True,
-            pretty_print=True)
-
-        self.assertEqual(request_params['data'], xml_string)
+        self.assertEqual(request_params['data'], self.xml_element_string)
         self.assertEqual(
             request_params['headers']['Content-Type'], 'application/xml')
 
     def test_send_as_xml_properly_formats_xml(self):
-        request_element = E.OuterField(
-            E.Field1('Test field'))
+        request_element = self.xml_element
         request_params = {
             'data': request_element,
             'send_as_xml': True
         }
         request_params = self.client._format_xml_request(request_params)
 
-        root_element = E.OuterField(
-            E.Field1('Test field'))
-        xml_string = etree.tostring(
-            root_element, encoding='utf-8', xml_declaration=True,
-            pretty_print=True)
-
-        self.assertEqual(request_params['data'], xml_string)
+        self.assertEqual(request_params['data'], self.xml_element_string)
         self.assertEqual(
             request_params['headers']['Content-Type'], 'application/xml')
 
