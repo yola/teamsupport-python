@@ -23,6 +23,7 @@ requirements = [
     'lxml>=3.4.4',
     'property-caching>=1.0.3',
     'querylist>=0.2.0',
+    'six==1.9.0',
 ]
 
 test_requirements = [
@@ -53,6 +54,11 @@ setup(
         'Natural Language :: English',
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
+        'Programming Language :: Python :: 3',
+        'Programming Language :: Python :: 3.3',
+        'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: Implementation :: PyPy',
+        'Topic :: Software Development :: Libraries',
     ],
     test_suite='tests',
     tests_require=test_requirements
