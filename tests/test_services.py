@@ -10,6 +10,7 @@ Tests for `teamsupport.services` module.
 import unittest
 
 from lxml import etree
+from lxml.builder import E
 
 from teamsupport.services import XMLHTTPServiceClient
 from tests import PatchedSessionXmlTests
@@ -24,7 +25,7 @@ class TestBaseXMLClient(PatchedSessionXmlTests):
     def test_parse_xml_response_returns_element(self):
         self.response.content = '<Tickets></Tickets>'
         result = self.client.parse_xml_response(self.response)
-        self.assertEqualXml(result, etree.Element('Tickets'))
+        self.assertEqualXml(result, E.Tickets())
 
     def test_send_as_xml_properly_formats_request(self):
         request_params = {
@@ -33,9 +34,9 @@ class TestBaseXMLClient(PatchedSessionXmlTests):
             'send_as_xml': True
         }
         request_params = self.client._format_xml_request(request_params)
-        root_element = etree.Element('OuterField')
-        sub_element = etree.SubElement(root_element, 'Field1')
-        sub_element.text = 'Test field'
+
+        root_element = E.OuterField(
+            E.Field1('Test field'))
         xml_string = etree.tostring(
             root_element, encoding='utf-8', xml_declaration=True,
             pretty_print=True)
@@ -45,18 +46,16 @@ class TestBaseXMLClient(PatchedSessionXmlTests):
             request_params['headers']['Content-Type'], 'application/xml')
 
     def test_send_as_xml_properly_formats_xml(self):
-        request_element = etree.Element('OuterField')
-        sub_element = etree.SubElement(request_element, 'Field1')
-        sub_element.text = 'Test field'
+        request_element = E.OuterField(
+            E.Field1('Test field'))
         request_params = {
             'data': request_element,
             'send_as_xml': True
         }
         request_params = self.client._format_xml_request(request_params)
 
-        root_element = etree.Element('OuterField')
-        sub_element = etree.SubElement(root_element, 'Field1')
-        sub_element.text = 'Test field'
+        root_element = E.OuterField(
+            E.Field1('Test field'))
         xml_string = etree.tostring(
             root_element, encoding='utf-8', xml_declaration=True,
             pretty_print=True)

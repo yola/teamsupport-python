@@ -9,7 +9,7 @@ Tests for `teamsupport.utils` module.
 """
 import unittest
 
-from lxml import etree
+from lxml.builder import E
 
 from teamsupport.utils import to_xml
 from tests import XmlTestCase
@@ -26,9 +26,8 @@ class TestToXml(XmlTestCase):
         }
         result = to_xml(**params)
 
-        root_element = etree.Element('OuterField')
-        sub_element = etree.SubElement(root_element, 'Field1')
-        sub_element.text = 'Test field'
+        root_element = E.OuterField(
+            E.Field1('Test field'))
 
         self.assertEqualXml(result, root_element)
 
