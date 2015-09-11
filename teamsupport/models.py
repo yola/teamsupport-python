@@ -46,3 +46,15 @@ class Action(XmlModel):
         self.ticket_id = self.TicketID
         self.id = self.ID
 
+
+class User(XmlModel):
+    def __init__(self, client, user_id=None, data=None):
+        self.client = client
+        self.data = data
+        if user_id:
+            self.data = self.client.get_user(user_id)
+        elif not self.data:
+            raise MissingArgumentError(
+                "__init__() needs either a 'user_id' or 'data' argument "
+                '(neither given)')
+        self.id = self.UserID
