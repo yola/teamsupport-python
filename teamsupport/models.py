@@ -32,6 +32,11 @@ class Ticket(XmlModel):
             ) for action in actions.findall('Action')
         ], wrap=False)
 
+    @cached_property
+    def user(self):
+        user_data = self.client.get_user(self.UserID)
+        return User(client=self.client, data=user_data)
+
 
 class Action(XmlModel):
     def __init__(self, client, ticket_id=None, action_id=None, data=None):
