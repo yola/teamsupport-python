@@ -34,8 +34,7 @@ class Ticket(XmlModel):
 
     @cached_property
     def user(self):
-        user_data = self.client.get_user(self.UserID)
-        return User(client=self.client, data=user_data)
+        return User(client=self.client, user_id=self.UserID)
 
 
 class Action(XmlModel):
