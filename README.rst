@@ -40,4 +40,4 @@ Usage
 .. |Build Status| image:: https://img.shields.io/travis/yola/teamsupport-python.svg?style=flat-square
    :target: https://travis-ci.org/yola/teamsupport-python
 .. |Latest Version| image:: https://img.shields.io/pypi/v/teamsupport.svg?style=flat-square
-   :target: https://warehouse.python.org/project/teamsupport-python
+   :target: https://warehouse.python.org/project/teamsupport
