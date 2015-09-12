@@ -76,3 +76,7 @@ class TeamSupportService(XMLHTTPServiceClient):
             'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
             root='Action', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
+
+    def get_user(self, user_id):
+        response = self.get('Users/{0}'.format(user_id))
+        return self.parse_xml_response(response)

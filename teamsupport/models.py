@@ -4,7 +4,14 @@ from querylist import QueryList
 from teamsupport.errors import MissingArgumentError
 
 
-class Ticket(object):
+class XmlModel(object):
+    def __getattr__(self, name):
+        if self.data.find(name) is not None:
+            return self.data.find(name).text
+        raise AttributeError(name)
+
+
+class Ticket(XmlModel):
     def __init__(self, client, ticket_id=None, data=None):
         self.client = client
         self.data = data
@@ -16,11 +23,6 @@ class Ticket(object):
                 '(neither given)')
         self.id = self.TicketID
 
-    def __getattr__(self, name):
-        if self.data.find(name) is not None:
-            return self.data.find(name).text
-        raise AttributeError(name)
-
     @cached_property
     def actions(self):
         actions = self.client.get_ticket_actions(self.id)
@@ -30,8 +32,12 @@ class Ticket(object):
             ) for action in actions.findall('Action')
         ], wrap=False)
 
+    @cached_property
+    def user(self):
+        return User(client=self.client, user_id=self.UserID)
 
-class Action(object):
+
+class Action(XmlModel):
     def __init__(self, client, ticket_id=None, action_id=None, data=None):
         self.client = client
         self.data = data
@@ -44,7 +50,15 @@ class Action(object):
         self.ticket_id = self.TicketID
         self.id = self.ID
 
-    def __getattr__(self, name):
-        if self.data.find(name) is not None:
-            return self.data.find(name).text
-        raise AttributeError(name)
+
+class User(XmlModel):
+    def __init__(self, client, user_id=None, data=None):
+        self.client = client
+        self.data = data
+        if user_id:
+            self.data = self.client.get_user(user_id)
+        elif not self.data:
+            raise MissingArgumentError(
+                "__init__() needs either a 'user_id' or 'data' argument "
+                '(neither given)')
+        self.id = self.UserID
