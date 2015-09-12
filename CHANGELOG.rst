@@ -1,7 +1,7 @@
 Changelog
 =========
 
-DEV
+0.1.1 (2015-09-12)
 ------------------
 
 -  Add `User` model and `TeamSupportService.get_user` method.
