@@ -59,7 +59,8 @@ class TeamSupportService(XMLHTTPServiceClient):
 
     def update_ticket(self, ticket_id, data):
         response = self.put(
-            'Tickets/{0}'.format(ticket_id), data=data, send_as_xml=True)
+            'Tickets/{0}'.format(ticket_id),
+            data=data, root='Ticket', send_as_xml=True)
         return self.parse_xml_response(response)
 
     def get_ticket_actions(self, ticket_id):
