@@ -1,2 +1,3 @@
-TEAMSUPPORT_ORG_ID = 'test-org-id'
-TEAMSUPPORT_AUTH_KEY = 'test-auth-key'
+# Please get actual value of auth_key from configs and renamed to `config.py`.
+ORG_ID = '965985'
+AUTH_KEY = '...61'
