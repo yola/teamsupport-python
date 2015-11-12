@@ -66,10 +66,13 @@ class TeamSupportService(XMLHTTPServiceClient):
         self.delete('Contacts/{}'.format(contact_id))
 
     def create_ticket(self, first_name, email, category, name, description):
+        # We need to associate ticket with Contact, otherwise ticket doesn't
+        # make sense. First, we try to find an existing contact.
         contacts = self.search_contacts(FirstName=first_name, Email=email)
         if len(contacts):
             contact = contacts[0]
         else:
+            # Otherwise - create new one.
             contact = self.create_contact(
                 FirstName=first_name, Email=email)
         contact_id = contact.find('ContactID').text

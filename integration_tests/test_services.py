@@ -88,3 +88,7 @@ class TestCreateTicketForExistingContact(unittest.TestCase):
     def tearDown(self):
         self.client.delete_ticket(self.ticket_id)
         self.client.delete_contact(self.contact_id)
+
+
+if __name__ == '__main__':
+    unittest.main()
