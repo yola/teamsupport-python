@@ -8,10 +8,6 @@ from lxml import etree
 from teamsupport.utils import to_xml
 
 
-TICKET_STATUS_NEW = '212203'
-TICKET_TYPE_SUPPORT = '35731'
-
-
 class XMLHTTPServiceClient(HTTPServiceClient):
     def _format_xml_request(self, request_params):
         data_set = request_params.get('data') is not None
@@ -45,10 +41,6 @@ class TeamSupportService(XMLHTTPServiceClient):
         self.auth_token = auth_token
 
     def search_tickets(self, query_params=None):
-        if query_params is None:
-            query_params = {}
-        query_params['TicketTypeID'] = TICKET_TYPE_SUPPORT
-
         response = self.get('Tickets/', params=query_params)
         content = self.parse_xml_response(response)
         return content
@@ -57,41 +49,18 @@ class TeamSupportService(XMLHTTPServiceClient):
         response = self.get('Contacts/', params=query_params)
         return self.parse_xml_response(response)
 
-    def create_contact(self, **query_params):
+    def create_contact(self, **data):
         response = self.post(
-            'Contacts/', root='Contact', data=query_params, send_as_xml=True)
+            'Contacts/', root='Contact', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
     def delete_contact(self, contact_id):
         self.delete('Contacts/{}'.format(contact_id))
 
-    def create_ticket(self, first_name, email, category, name, description):
-        # We need to associate ticket with Contact, otherwise ticket doesn't
-        # make sense. First, we try to find an existing contact.
-        contacts = self.search_contacts(FirstName=first_name, Email=email)
-        if len(contacts):
-            contact = contacts[0]
-        else:
-            # Otherwise - create new one.
-            contact = self.create_contact(
-                FirstName=first_name, Email=email)
-        contact_id = contact.find('ContactID').text
-
-        data = {
-            'Name': name,
-            'FormCategory': category,
-            'TicketStatusID': TICKET_STATUS_NEW,
-            'TicketTypeID': TICKET_TYPE_SUPPORT,
-            'ContactID': contact_id
-        }
-
+    def create_ticket(self, data):
         response = self.post(
             'tickets', root='Ticket', data=data, send_as_xml=True)
-        ticket_xml = self.parse_xml_response(response)
-        ticket_id = ticket_xml.find('TicketID').text
-        self.set_ticket_description(ticket_id, description)
-
-        return self.get_ticket(ticket_id)
+        return self.parse_xml_response(response)
 
     def set_ticket_description(self, ticket_id, description):
         # Description is an Action in TeamSupport API. That action is created
@@ -112,9 +81,7 @@ class TeamSupportService(XMLHTTPServiceClient):
             return None
 
     def get_ticket(self, ticket_id):
-        query_params = {'TicketTypeID': TICKET_TYPE_SUPPORT}
-        response = self.get(
-            'Tickets/{0}'.format(ticket_id), params=query_params)
+        response = self.get('Tickets/{0}'.format(ticket_id))
         return self.parse_xml_response(response)
 
     def delete_ticket(self, ticket_id):

@@ -4,6 +4,10 @@ from querylist import QueryList
 from teamsupport.errors import MissingArgumentError
 
 
+TICKET_STATUS_NEW = '212203'
+TICKET_TYPE_SUPPORT = '35731'
+
+
 class XmlModel(object):
     def __getattr__(self, name):
         if self.data.find(name) is not None:
@@ -22,6 +26,31 @@ class Ticket(XmlModel):
                 "__init__() needs either a 'ticket_id' or 'data' argument "
                 '(neither given)')
         self.id = self.TicketID
+
+    @classmethod
+    def create(self, client, first_name, email, category, name, description):
+        # We need to associate ticket with Contact, otherwise ticket doesn't
+        # make sense. First, we try to find an existing contact.
+        contacts = client.search_contacts(FirstName=first_name, Email=email)
+        if len(contacts):
+            contact = contacts[0]
+        else:
+            # Otherwise - create new one.
+            contact = client.create_contact(FirstName=first_name, Email=email)
+        contact_id = contact.find('ContactID').text
+
+        data = {
+            'Name': name,
+            'FormCategory': category,
+            'TicketStatusID': TICKET_STATUS_NEW,
+            'TicketTypeID': TICKET_TYPE_SUPPORT,
+            'ContactID': contact_id
+        }
+
+        ticket_xml = client.create_ticket(data)
+        ticket_id = ticket_xml.find('TicketID').text
+        client.set_ticket_description(ticket_id, description)
+        return Ticket(client, ticket_id)
 
     @cached_property
     def actions(self):

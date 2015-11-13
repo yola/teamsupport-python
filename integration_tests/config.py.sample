@@ -1,3 +1,3 @@
-# Please get actual value of auth_key from configs and renamed to `config.py`.
+# Please get actual value of auth_key from configs and rename to `config.py`.
 ORG_ID = '965985'
 AUTH_KEY = '...61'
