@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-integration_tests.test_tickets
+integration_tests.test_tickets.
 ----------------------------------
 
 Integration tests for the client
