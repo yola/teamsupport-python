@@ -1,8 +1,7 @@
 demands>=1.1.0
 lxml>=3.4.4
-mock>=1.2.0
-# required by mock 1.2.0
-funcsigs>=0.4
+mock<1.2.0
+funcsigs<0.5
 nose < 2.0.0
 pinocchio < 1.0.0
 property-caching>=1.0.3

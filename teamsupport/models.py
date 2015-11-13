@@ -1,6 +1,8 @@
 from property_caching import cached_property
 from querylist import QueryList
 
+from integration_tests import config
+from teamsupport.services import TeamSupportService
 from teamsupport.errors import MissingArgumentError
 
 
@@ -14,10 +16,17 @@ class XmlModel(object):
             return self.data.find(name).text
         raise AttributeError(name)
 
+    @classmethod
+    def get_client(cls):
+        return TeamSupportService(config.ORG_ID, config.AUTH_KEY)
+
+    @cached_property
+    def client(self):
+        return self.get_client()
+
 
 class Ticket(XmlModel):
-    def __init__(self, client, ticket_id=None, data=None):
-        self.client = client
+    def __init__(self, ticket_id=None, data=None):
         self.data = data
         if ticket_id:
             self.data = self.client.get_ticket(ticket_id)
@@ -28,13 +37,13 @@ class Ticket(XmlModel):
         self.id = self.TicketID
 
     @classmethod
-    def create(cls, client, first_name, email, category, name, description):
+    def create(cls, first_name, email, category, name, description):
         # We need to associate ticket with Contact, otherwise ticket doesn't
         # make sense. First, we try to find an existing contact.
-        contact = Contact.get(client, first_name, email)
+        contact = Contact.get(first_name, email)
         if contact is None:
             # Otherwise - create new one.
-            contact = Contact.create(client, first_name, email)
+            contact = Contact.create(first_name, email)
 
         data = {
             'Name': name,
@@ -44,18 +53,18 @@ class Ticket(XmlModel):
             'ContactID': contact.id
         }
 
-        ticket = Ticket(client, client.create_ticket(data))
-        client.set_ticket_description(ticket.id, description)
+        ticket = Ticket(data=cls.get_client().create_ticket(data))
+        ticket.set_description(description)
         return ticket
+
+    def set_description(self, description):
+        self.client.set_ticket_description(self.id, description)
 
     @cached_property
     def actions(self):
         actions = self.client.get_ticket_actions(self.id)
-        return QueryList([
-            Action(
-                client=self.client, data=action
-            ) for action in actions.findall('Action')
-        ], wrap=False)
+        return QueryList([Action(data=action)
+                         for action in actions.findall('Action')], wrap=False)
 
     @cached_property
     def user(self):
@@ -63,8 +72,7 @@ class Ticket(XmlModel):
 
 
 class Action(XmlModel):
-    def __init__(self, client, ticket_id=None, action_id=None, data=None):
-        self.client = client
+    def __init__(self, ticket_id=None, action_id=None, data=None):
         self.data = data
         if action_id and ticket_id:
             self.data = self.client.get_ticket_action(ticket_id, action_id)
@@ -90,11 +98,10 @@ class User(XmlModel):
 
 
 class Contact(XmlModel):
-    def __init__(self, client, contact_id=None, data=None):
-        self.client = client
+    def __init__(self, contact_id=None, data=None):
         self.data = data
         if contact_id:
-            self.data = client.get_contact(contact_id)
+            self.data = self.client.get_contact(contact_id)
         elif not self.data:
             raise MissingArgumentError(
                 "__init__() needs either a 'contact_id' or 'data' argument "
@@ -102,13 +109,15 @@ class Contact(XmlModel):
         self.id = self.ContactID
 
     @classmethod
-    def get(cls, client, first_name, email):
+    def get(cls, first_name, email):
+        client = cls.get_client()
         contacts = client.search_contacts(FirstName=first_name, Email=email)
         if len(contacts) >= 1:
-            return Contact(client, data=contacts[0])
+            return Contact(data=contacts[0])
         return None
 
     @classmethod
-    def create(self, client, first_name, email):
+    def create(self, first_name, email):
+        client = self.get_client()
         contact_xml = client.create_contact(FirstName=first_name, Email=email)
-        return Contact(client, data=contact_xml)
+        return Contact(data=contact_xml)

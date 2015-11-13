@@ -54,6 +54,10 @@ class TeamSupportService(XMLHTTPServiceClient):
             'Contacts/', root='Contact', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
+    def get_contact(self, contact_id):
+        response = self.get('Contacts/{0}'.format(contact_id))
+        return self.parse_xml_response(response)
+
     def delete_contact(self, contact_id):
         self.delete('Contacts/{}'.format(contact_id))
 

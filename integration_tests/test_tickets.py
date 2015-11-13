@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 """
-integration_tests.test_tickets.
+integration_tests.test_tickets
 ----------------------------------
 
 Integration tests for the client
@@ -22,10 +22,9 @@ class TestCreateTicket(unittest.TestCase):
     ticket_text = 'test descr dont touch'
 
     def setUp(self):
-        self.client = TeamSupportService(
-            config.ORG_ID, config.AUTH_KEY)
+        self.client = TeamSupportService(config.ORG_ID, config.AUTH_KEY)
         self.ticket = Ticket.create(
-            self.client, self.first_name, self.email, self.ticket_category,
+            self.first_name, self.email, self.ticket_category,
             self.ticket_name, self.ticket_text)
         self.contacts = self.client.search_contacts(Email=self.email)
         self.contact_id = self.contacts[0].find('ContactID').text
@@ -68,7 +67,7 @@ class TestCreateTicketForExistingContact(unittest.TestCase):
 
         # Create ticket from same email as just created contact.
         self.ticket = Ticket.create(
-            self.client, self.first_name, self.email, self.ticket_category,
+            self.first_name, self.email, self.ticket_category,
             self.ticket_name, self.ticket_text)
 
         self.contacts = self.client.search_contacts(Email=self.email)
