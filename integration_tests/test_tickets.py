@@ -6,9 +6,7 @@ Integration tests for the client
 """
 import unittest
 
-from integration_tests import config
-from teamsupport import TeamSupportService
-from teamsupport.models import Ticket
+from teamsupport.models import Contact, Ticket
 
 
 class TestCreateTicket(unittest.TestCase):
@@ -19,28 +17,26 @@ class TestCreateTicket(unittest.TestCase):
     ticket_text = 'test descr dont touch'
 
     def setUp(self):
-        self.client = TeamSupportService(config.ORG_ID, config.AUTH_KEY)
         self.ticket = Ticket.create(
             self.first_name, self.email, self.ticket_category,
             self.ticket_name, self.ticket_text)
-        self.contacts = self.client.search_contacts(Email=self.email)
-        self.contact_id = self.contacts[0].find('ContactID').text
+        self.contact = Contact.get(self.first_name, self.email)
 
     def test_ticket_is_created(self):
         self.assertEqual(self.ticket.Name, self.ticket_name)
         self.assertEqual(self.ticket.Formcategory, self.ticket_category)
 
     def test_ticket_description_is_set(self):
-        description = self.client.get_ticket_description(self.ticket.TicketID)
+        description = self.ticket.get_description()
         self.assertEqual(description, self.ticket_text)
 
     def test_new_contact_is_created(self):
-        contacts = self.client.search_contacts(Email=self.email)
-        self.assertEqual(len(contacts), 1)
+        self.assertEqual(self.contact.FirstName, self.first_name)
+        self.assertEqual(self.contact.Email, self.email)
 
     def tearDown(self):
-        self.client.delete_ticket(self.ticket.TicketID)
-        self.client.delete_contact(self.contact_id)
+        self.ticket.delete()
+        self.contact.delete()
 
 
 class TestCreateTicketForExistingContact(unittest.TestCase):
@@ -51,32 +47,26 @@ class TestCreateTicketForExistingContact(unittest.TestCase):
     ticket_text = 'test descr dont touch'
 
     def setUp(self):
-        self.client = TeamSupportService(
-            config.ORG_ID, config.AUTH_KEY)
-
         # Make sure contact with such email doesn't exist.
-        self.contacts = self.client.search_contacts(Email=self.email)
-        self.assertEqual(len(self.contacts), 0)
+        contact = Contact.get(self.first_name, self.email)
+        self.assertIsNone(contact)
 
         # Create contact manually.
-        self.client.create_contact(
-            FirstName=self.first_name, EMail=self.email)
+        self.contact = Contact.create(self.first_name, self.email)
 
         # Create ticket from same email as just created contact.
         self.ticket = Ticket.create(
             self.first_name, self.email, self.ticket_category,
             self.ticket_name, self.ticket_text)
 
-        self.contacts = self.client.search_contacts(Email=self.email)
-        self.contact_id = self.contacts[0].find('ContactID').text
+        self.ticket_contact = Contact.get(self.first_name, self.email)
 
     def test_ticket_is_created(self):
         self.assertEqual(self.ticket.Name, self.ticket_name)
 
     def test_new_contact_is_not_created(self):
-        contacts = self.client.search_contacts(Email=self.email)
-        self.assertEqual(len(contacts), 1)
+        self.assertEqual(self.contact.id, self.ticket_contact.id)
 
     def tearDown(self):
-        self.client.delete_ticket(self.ticket.TicketID)
-        self.client.delete_contact(self.contact_id)
+        self.ticket.delete()
+        self.contact.delete()

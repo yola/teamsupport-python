@@ -20,9 +20,10 @@ Usage
 
 ::
 
-    from teamsupport.services import TeamSupportService
+    from teamsupport.services import TeamSupportService, init
 
-    client = TeamSupportService(TEAMSUPPORT_ORG_ID, TEAMSUPPORT_AUTH_KEY)
+    init(<org_id>, <auth_key>)
+    client = TeamSupportService()
 
     # Fetch all tickets without custom fields
     tickets = client.get_tickets()

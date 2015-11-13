@@ -1,7 +1,6 @@
 from property_caching import cached_property
 from querylist import QueryList
 
-from integration_tests import config
 from teamsupport.services import TeamSupportService
 from teamsupport.errors import MissingArgumentError
 
@@ -18,7 +17,7 @@ class XmlModel(object):
 
     @classmethod
     def get_client(cls):
-        return TeamSupportService(config.ORG_ID, config.AUTH_KEY)
+        return TeamSupportService()
 
     @cached_property
     def client(self):
@@ -56,6 +55,12 @@ class Ticket(XmlModel):
         ticket = Ticket(data=cls.get_client().create_ticket(data))
         ticket.set_description(description)
         return ticket
+
+    def delete(self):
+        self.client.delete_ticket(self.id)
+
+    def get_description(self):
+        return self.client.get_ticket_description(self.id)
 
     def set_description(self, description):
         self.client.set_ticket_description(self.id, description)
@@ -115,3 +120,6 @@ class Contact(XmlModel):
         client = self.get_client()
         contact_xml = client.create_contact(FirstName=first_name, Email=email)
         return Contact(data=contact_xml)
+
+    def delete(self):
+        self.client.delete_contact(self.id)

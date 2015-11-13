@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from demands import HTTPServiceClient
 from lxml import etree
 
+from teamsupport import config
 from teamsupport.utils import to_xml
 
 
@@ -33,12 +34,14 @@ class XMLHTTPServiceClient(HTTPServiceClient):
 
 
 class TeamSupportService(XMLHTTPServiceClient):
-    def __init__(self, org_id, auth_token, **kwargs):
+    def __init__(self, **kwargs):
+        if config.ORG_ID is None or config.AUTH_KEY is None:
+            raise RuntimeError(
+                'You need to call init(<org_id>, <auth_key>) first')
+
         super(TeamSupportService, self).__init__(
             url='https://app.teamsupport.com/api/xml/',
-            auth=(org_id, auth_token), **kwargs)
-        self.org_id = org_id
-        self.auth_token = auth_token
+            auth=(config.ORG_ID, config.AUTH_KEY), **kwargs)
 
     def search_tickets(self, query_params=None):
         response = self.get('tickets/', params=query_params)
