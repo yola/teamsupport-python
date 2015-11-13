@@ -1,6 +1,3 @@
-#!/usr/bin/env python
-# -*- coding: utf-8 -*-
-
 """
 integration_tests.test_tickets
 ----------------------------------
@@ -83,7 +80,3 @@ class TestCreateTicketForExistingContact(unittest.TestCase):
     def tearDown(self):
         self.client.delete_ticket(self.ticket.TicketID)
         self.client.delete_contact(self.contact_id)
-
-
-if __name__ == '__main__':
-    unittest.main()

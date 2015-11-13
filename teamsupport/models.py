@@ -98,14 +98,8 @@ class User(XmlModel):
 
 
 class Contact(XmlModel):
-    def __init__(self, contact_id=None, data=None):
+    def __init__(self, data):
         self.data = data
-        if contact_id:
-            self.data = self.client.get_contact(contact_id)
-        elif not self.data:
-            raise MissingArgumentError(
-                "__init__() needs either a 'contact_id' or 'data' argument "
-                '(neither given)')
         self.id = self.ContactID
 
     @classmethod

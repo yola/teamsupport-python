@@ -41,25 +41,25 @@ class TeamSupportService(XMLHTTPServiceClient):
         self.auth_token = auth_token
 
     def search_tickets(self, query_params=None):
-        response = self.get('Tickets/', params=query_params)
+        response = self.get('tickets/', params=query_params)
         content = self.parse_xml_response(response)
         return content
 
     def search_contacts(self, **query_params):
-        response = self.get('Contacts/', params=query_params)
+        response = self.get('contacts/', params=query_params)
         return self.parse_xml_response(response)
 
     def create_contact(self, **data):
         response = self.post(
-            'Contacts/', root='Contact', data=data, send_as_xml=True)
+            'contacts/', root='Contact', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
     def get_contact(self, contact_id):
-        response = self.get('Contacts/{0}'.format(contact_id))
+        response = self.get('contacts/{0}'.format(contact_id))
         return self.parse_xml_response(response)
 
     def delete_contact(self, contact_id):
-        self.delete('Contacts/{}'.format(contact_id))
+        self.delete('contacts/{}'.format(contact_id))
 
     def create_ticket(self, data):
         response = self.post(
@@ -89,27 +89,27 @@ class TeamSupportService(XMLHTTPServiceClient):
         return self.parse_xml_response(response)
 
     def delete_ticket(self, ticket_id):
-        self.delete('Tickets/{0}'.format(ticket_id))
+        self.delete('tickets/{0}'.format(ticket_id))
 
     def update_ticket(self, ticket_id, data):
         response = self.put(
-            'Tickets/{0}'.format(ticket_id),
+            'tickets/{0}'.format(ticket_id),
             data=data, root='Ticket', send_as_xml=True)
         return self.parse_xml_response(response)
 
     def get_ticket_actions(self, ticket_id, query_params=None):
         response = self.get(
-            'Tickets/{0}/Actions'.format(ticket_id), params=query_params)
+            'tickets/{0}/Actions'.format(ticket_id), params=query_params)
         return self.parse_xml_response(response)
 
     def get_ticket_action(self, ticket_id, action_id):
         response = self.get(
-            'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
+            'tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
         return self.parse_xml_response(response)
 
     def update_ticket_action(self, ticket_id, action_id, data):
         response = self.put(
-            'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
+            'tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
             root='Action', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
@@ -118,6 +118,6 @@ class TeamSupportService(XMLHTTPServiceClient):
         return self.parse_xml_response(response)
 
     def get_users(self, **query_params):
-        response = self.get('Users/', params=query_params)
+        response = self.get('users/', params=query_params)
         content = self.parse_xml_response(response)
         return content
