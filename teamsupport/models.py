@@ -28,29 +28,25 @@ class Ticket(XmlModel):
         self.id = self.TicketID
 
     @classmethod
-    def create(self, client, first_name, email, category, name, description):
+    def create(cls, client, first_name, email, category, name, description):
         # We need to associate ticket with Contact, otherwise ticket doesn't
         # make sense. First, we try to find an existing contact.
-        contacts = client.search_contacts(FirstName=first_name, Email=email)
-        if len(contacts):
-            contact = contacts[0]
-        else:
+        contact = Contact.get(client, first_name, email)
+        if contact is None:
             # Otherwise - create new one.
-            contact = client.create_contact(FirstName=first_name, Email=email)
-        contact_id = contact.find('ContactID').text
+            contact = Contact.create(client, first_name, email)
 
         data = {
             'Name': name,
             'FormCategory': category,
             'TicketStatusID': TICKET_STATUS_NEW,
             'TicketTypeID': TICKET_TYPE_SUPPORT,
-            'ContactID': contact_id
+            'ContactID': contact.id
         }
 
-        ticket_xml = client.create_ticket(data)
-        ticket_id = ticket_xml.find('TicketID').text
-        client.set_ticket_description(ticket_id, description)
-        return Ticket(client, ticket_id)
+        ticket = Ticket(client, client.create_ticket(data))
+        client.set_ticket_description(ticket.id, description)
+        return ticket
 
     @cached_property
     def actions(self):
@@ -91,3 +87,28 @@ class User(XmlModel):
                 "__init__() needs either a 'user_id' or 'data' argument "
                 '(neither given)')
         self.id = self.UserID
+
+
+class Contact(XmlModel):
+    def __init__(self, client, contact_id=None, data=None):
+        self.client = client
+        self.data = data
+        if contact_id:
+            self.data = client.get_contact(contact_id)
+        elif not self.data:
+            raise MissingArgumentError(
+                "__init__() needs either a 'contact_id' or 'data' argument "
+                '(neither given)')
+        self.id = self.ContactID
+
+    @classmethod
+    def get(cls, client, first_name, email):
+        contacts = client.search_contacts(FirstName=first_name, Email=email)
+        if len(contacts) >= 1:
+            return Contact(client, data=contacts[0])
+        return None
+
+    @classmethod
+    def create(self, client, first_name, email):
+        contact_xml = client.create_contact(FirstName=first_name, Email=email)
+        return Contact(client, data=contact_xml)
