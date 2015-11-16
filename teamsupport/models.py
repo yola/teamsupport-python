@@ -39,7 +39,7 @@ class Ticket(XmlModel):
     def create(cls, first_name, email, category, title, description):
         # We need to associate ticket with Contact, otherwise ticket doesn't
         # make sense. First, we try to find an existing contact.
-        contact = Contact.get(first_name, email)
+        contact = Contact.get(email)
         if contact is None:
             # Otherwise - create new one.
             contact = Contact.create(first_name, email)
@@ -109,9 +109,10 @@ class Contact(XmlModel):
         self.id = self.ContactID
 
     @classmethod
-    def get(cls, first_name, email):
+    def get(cls, email):
+        """Return first contact with given email."""
         client = cls.get_client()
-        contacts = client.search_contacts(FirstName=first_name, Email=email)
+        contacts = client.search_contacts(Email=email)
         if len(contacts) >= 1:
             return Contact(data=contacts[0])
         return None
@@ -119,7 +120,8 @@ class Contact(XmlModel):
     @classmethod
     def create(self, first_name, email):
         client = self.get_client()
-        contact_xml = client.create_contact(FirstName=first_name, Email=email)
+        contact_xml = client.create_contact(
+            {'FirstName': first_name, 'Email': email})
         return Contact(data=contact_xml)
 
     def delete(self):

@@ -48,7 +48,7 @@ class TestCreateTicketForExistingContact(unittest.TestCase):
 
     def setUp(self):
         # Make sure contact with such email doesn't exist.
-        contact = Contact.get(self.first_name, self.email)
+        contact = Contact.get(self.email)
         self.assertIsNone(contact)
 
         # Create contact manually.
@@ -59,7 +59,7 @@ class TestCreateTicketForExistingContact(unittest.TestCase):
             self.first_name, self.email, self.ticket_category,
             self.ticket_name, self.ticket_text)
 
-        self.ticket_contact = Contact.get(self.first_name, self.email)
+        self.ticket_contact = Contact.get(self.email)
 
     def test_ticket_is_created(self):
         self.assertEqual(self.ticket.Name, self.ticket_name)

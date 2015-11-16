@@ -37,7 +37,8 @@ class TeamSupportService(XMLHTTPServiceClient):
     def __init__(self, **kwargs):
         if config.ORG_ID is None or config.AUTH_KEY is None:
             raise RuntimeError(
-                'You need to call init(<org_id>, <auth_key>) first')
+                'You need to call init(<org_id>, <auth_key>) first.'
+                ' To run integration tests edit config.py manually')
 
         super(TeamSupportService, self).__init__(
             url='https://app.teamsupport.com/api/xml/',
@@ -52,7 +53,7 @@ class TeamSupportService(XMLHTTPServiceClient):
         response = self.get('contacts/', params=query_params)
         return self.parse_xml_response(response)
 
-    def create_contact(self, **data):
+    def create_contact(self, data):
         response = self.post(
             'contacts/', root='Contact', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
