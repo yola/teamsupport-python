@@ -35,8 +35,10 @@ Usage
     # Get an action using the model
     from teamsupport.models import Action
     action =  Action(client, ticket_id, action_id)
-
     print(action.Description)  # Prints 'New description'
+
+    To run integration tests please set correct values in teamsupport/config.py
+    and run: `nosetests integration_tests`
 
 .. |Build Status| image:: https://img.shields.io/travis/yola/teamsupport-python.svg?style=flat-square
    :target: https://travis-ci.org/yola/teamsupport-python

@@ -68,8 +68,9 @@ class Ticket(XmlModel):
     @cached_property
     def actions(self):
         actions = self.client.get_ticket_actions(self.id)
-        return QueryList([Action(data=action)
-                         for action in actions.findall('Action')], wrap=False)
+        return QueryList(
+            [Action(data=action)
+                for action in actions.findall('Action')], wrap=False)
 
     @cached_property
     def user(self):
