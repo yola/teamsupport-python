@@ -36,7 +36,7 @@ class Ticket(XmlModel):
         self.id = self.TicketID
 
     @classmethod
-    def create(cls, first_name, email, category, name, description):
+    def create(cls, first_name, email, category, title, description):
         # We need to associate ticket with Contact, otherwise ticket doesn't
         # make sense. First, we try to find an existing contact.
         contact = Contact.get(first_name, email)
