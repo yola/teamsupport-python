@@ -20,7 +20,7 @@ class TestCreateTicket(unittest.TestCase):
         self.ticket = Ticket.create(
             self.first_name, self.email, self.ticket_category,
             self.ticket_name, self.ticket_text)
-        self.contact = Contact.get(self.first_name, self.email)
+        self.contact = Contact.get(self.email)
 
     def test_ticket_is_created(self):
         self.assertEqual(self.ticket.Name, self.ticket_name)
