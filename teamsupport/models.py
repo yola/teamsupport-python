@@ -45,7 +45,7 @@ class Ticket(XmlModel):
             contact = Contact.create(first_name, email)
 
         data = {
-            'Name': name,
+            'Name': title,
             'FormCategory': category,
             'TicketStatusID': TICKET_STATUS_NEW,
             'TicketTypeID': TICKET_TYPE_SUPPORT,
