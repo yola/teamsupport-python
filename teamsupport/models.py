@@ -60,10 +60,21 @@ class Ticket(XmlModel):
         self.client.delete_ticket(self.id)
 
     def get_description(self):
-        return self.client.get_ticket_description(self.id)
+        ticket_actions = self.client.get_ticket_actions(
+            self.id, {'SystemActionTypeID': 1})
+        if len(ticket_actions) >= 1:
+            return ticket_actions[0].find('Description').text
+        return None
 
     def set_description(self, description):
-        self.client.set_ticket_description(self.id, description)
+        # Description is an Action in TeamSupport API. That action is created
+        # automatically when the ticket is created. We need to query it's ID
+        # and update this action to set ticket description.
+        ticket_actions = self.client.get_ticket_actions(
+            self.id, {'SystemActionTypeID': 1})
+        action_id = ticket_actions[0].find('ActionID').text
+        self.client.update_ticket_action(
+            self.id, action_id, {'Description': description})
 
     @cached_property
     def actions(self):
