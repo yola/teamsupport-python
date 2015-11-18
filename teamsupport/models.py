@@ -61,7 +61,7 @@ class Ticket(XmlModel):
 
     def get_description(self):
         ticket_actions = self.client.get_ticket_actions(
-            self.id, {'SystemActionTypeID': 1})
+            self.id, SystemActionTypeID=1)
         if len(ticket_actions) >= 1:
             return ticket_actions[0].find('Description').text
         return None
@@ -71,7 +71,7 @@ class Ticket(XmlModel):
         # automatically when the ticket is created. We need to query it's ID
         # and update this action to set ticket description.
         ticket_actions = self.client.get_ticket_actions(
-            self.id, {'SystemActionTypeID': 1})
+            self.id, SystemActionTypeID=1)
         action_id = ticket_actions[0].find('ActionID').text
         self.client.update_ticket_action(
             self.id, action_id, {'Description': description})

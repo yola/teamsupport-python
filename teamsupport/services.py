@@ -44,7 +44,7 @@ class TeamSupportService(XMLHTTPServiceClient):
             url='https://app.teamsupport.com/api/xml/',
             auth=(config.ORG_ID, config.AUTH_KEY), **kwargs)
 
-    def search_tickets(self, query_params=None):
+    def search_tickets(self, **query_params):
         response = self.get('tickets/', params=query_params)
         content = self.parse_xml_response(response)
         return content
@@ -70,24 +70,6 @@ class TeamSupportService(XMLHTTPServiceClient):
             'tickets', root='Ticket', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
-    def set_ticket_description(self, ticket_id, description):
-        # Description is an Action in TeamSupport API. That action is created
-        # automatically when the ticket is created. We need to query it's ID
-        # and update this action to set ticket description.
-        ticket_actions = self.get_ticket_actions(
-            ticket_id, {'SystemActionTypeID': 1})
-        action_id = ticket_actions[0].find('ActionID').text
-        self.update_ticket_action(
-            ticket_id, action_id, {'Description': description})
-
-    def get_ticket_description(self, ticket_id):
-        actions = self.get_ticket_actions(
-            ticket_id, {'SystemActionTypeID': 1})
-        if len(actions) == 1:
-            return actions[0].find('Description').text
-        else:
-            return None
-
     def get_ticket(self, ticket_id):
         response = self.get('Tickets/{0}'.format(ticket_id))
         return self.parse_xml_response(response)
@@ -101,7 +83,7 @@ class TeamSupportService(XMLHTTPServiceClient):
             data=data, root='Ticket', send_as_xml=True)
         return self.parse_xml_response(response)
 
-    def get_ticket_actions(self, ticket_id, query_params=None):
+    def get_ticket_actions(self, ticket_id, **query_params):
         response = self.get(
             'tickets/{0}/Actions'.format(ticket_id), params=query_params)
         return self.parse_xml_response(response)
