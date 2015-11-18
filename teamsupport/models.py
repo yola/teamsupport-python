@@ -84,10 +84,6 @@ class Ticket(XmlModel):
             [Action(data=action)
                 for action in actions.findall('Action')], wrap=False)
 
-    @cached_property
-    def user(self):
-        return User(client=self.client, user_id=self.UserID)
-
 
 class Action(XmlModel):
     def __init__(self, ticket_id=None, action_id=None, data=None):
@@ -100,19 +96,6 @@ class Action(XmlModel):
                 "or a 'data' argument (neither given)")
         self.ticket_id = self.TicketID
         self.id = self.ID
-
-
-class User(XmlModel):
-    def __init__(self, user_id=None, data=None):
-        self.client = cls.get_client()
-        self.data = data
-        if user_id:
-            self.data = self.client.get_user(user_id)
-        elif not self.data:
-            raise MissingArgumentError(
-                "__init__() needs either a 'user_id' or 'data' argument "
-                '(neither given)')
-        self.id = self.UserID
 
 
 class Contact(XmlModel):
