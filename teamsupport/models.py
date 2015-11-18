@@ -5,6 +5,7 @@ from teamsupport.services import TeamSupportService
 from teamsupport.errors import MissingArgumentError
 
 
+ACTION_TYPE_DESCRIPTION = 1
 TICKET_STATUS_NEW = '212203'
 TICKET_TYPE_SUPPORT = '35731'
 
@@ -61,7 +62,7 @@ class Ticket(XmlModel):
 
     def get_description(self):
         ticket_actions = self.client.get_ticket_actions(
-            self.id, SystemActionTypeID=1)
+            self.id, SystemActionTypeID=ACTION_TYPE_DESCRIPTION)
         if len(ticket_actions) >= 1:
             return ticket_actions[0].find('Description').text
         return None
@@ -71,7 +72,7 @@ class Ticket(XmlModel):
         # automatically when the ticket is created. We need to query it's ID
         # and update this action to set ticket description.
         ticket_actions = self.client.get_ticket_actions(
-            self.id, SystemActionTypeID=1)
+            self.id, SystemActionTypeID=ACTION_TYPE_DESCRIPTION)
         action_id = ticket_actions[0].find('ActionID').text
         self.client.update_ticket_action(
             self.id, action_id, {'Description': description})
@@ -102,8 +103,8 @@ class Action(XmlModel):
 
 
 class User(XmlModel):
-    def __init__(self, client, user_id=None, data=None):
-        self.client = client
+    def __init__(self, user_id=None, data=None):
+        self.client = cls.get_client()
         self.data = data
         if user_id:
             self.data = self.client.get_user(user_id)
