@@ -34,6 +34,12 @@ class TestCreateTicket(unittest.TestCase):
         self.assertEqual(self.contact.FirstName, self.first_name)
         self.assertEqual(self.contact.Email, self.email)
 
+    def test_ticket_associated_with_contact(self):
+        self.assertEqual(len(self.ticket.contacts), 1)
+        contact = self.ticket.contacts[0]
+        self.assertEqual(contact.FirstName, self.first_name)
+        self.assertEqual(contact.Email, self.email)
+
     def tearDown(self):
         self.ticket.delete()
         self.contact.delete()

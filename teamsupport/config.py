@@ -1,2 +1,2 @@
-ORG_ID = None
-AUTH_KEY = None
+ORG_ID = '965985'
+AUTH_KEY = '38cdbe87-c81f-4afb-9831-e70a197f6661'

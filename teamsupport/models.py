@@ -84,6 +84,20 @@ class Ticket(XmlModel):
             [Action(data=action)
                 for action in actions.findall('Action')], wrap=False)
 
+    @cached_property
+    def contacts(self):
+        contacts = self.client.get_ticket_contacts(self.id)
+        return QueryList(
+            [Contact(data=contact)
+                for contact in contacts.findall('Contact')], wrap=False)
+
+    @cached_property
+    def customers(self):
+        customers = self.client.get_ticket_customers(self.id)
+        return QueryList(
+            [Customer(data=customer)
+                for customer in customers.findall('Customer')], wrap=False)
+
 
 class Action(XmlModel):
     def __init__(self, ticket_id=None, action_id=None, data=None):
@@ -121,3 +135,16 @@ class Contact(XmlModel):
 
     def delete(self):
         self.client.delete_contact(self.id)
+
+
+class Customer(XmlModel):
+    def __init__(self, data):
+        self.data = data
+        self.id = self.OrganizationID
+
+    @cached_property
+    def contacts(self):
+        contacts = self.client.get_customer_contacts(self.id)
+        return QueryList(
+            [Contact(data=contact)
+                for contact in contacts.findall('Contact')], wrap=False)

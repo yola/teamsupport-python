@@ -88,6 +88,14 @@ class TeamSupportService(XMLHTTPServiceClient):
             'tickets/{0}/Actions'.format(ticket_id), params=query_params)
         return self.parse_xml_response(response)
 
+    def get_ticket_contacts(self, ticket_id):
+        response = self.get('tickets/{0}/Contacts'.format(ticket_id))
+        return self.parse_xml_response(response)
+
+    def get_ticket_customers(self, ticket_id):
+        response = self.get('tickets/{0}/Customers'.format(ticket_id))
+        return self.parse_xml_response(response)
+
     def get_ticket_action(self, ticket_id, action_id):
         response = self.get(
             'tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
@@ -107,3 +115,7 @@ class TeamSupportService(XMLHTTPServiceClient):
         response = self.get('users/', params=query_params)
         content = self.parse_xml_response(response)
         return content
+
+    def get_customer_contacts(self, customer_id):
+        response = self.get('tickets/{0}/Customers'.format(customer_id))
+        return self.parse_xml_response(response)
