@@ -6,8 +6,6 @@ from teamsupport.errors import MissingArgumentError
 
 
 ACTION_TYPE_DESCRIPTION = 1
-TICKET_STATUS_NEW = '212203'
-TICKET_TYPE_SUPPORT = '35731'
 
 
 class XmlModel(object):
@@ -26,6 +24,9 @@ class XmlModel(object):
 
 
 class Ticket(XmlModel):
+    TICKET_STATUS_NEW = None
+    TICKET_TYPE_SUPPORT = None
+
     def __init__(self, ticket_id=None, data=None):
         self.data = data
         if ticket_id:
@@ -37,25 +38,52 @@ class Ticket(XmlModel):
         self.id = self.TicketID
 
     @classmethod
-    def create(cls, first_name, email, category, title, description):
+    def create(
+            cls, user_email, user_first_name, user_last_name,
+            title, description, **params):
         # We need to associate ticket with Contact, otherwise ticket doesn't
         # make sense. First, we try to find an existing contact.
-        contact = Contact.get(email)
+        contact = Contact.get(user_email)
         if contact is None:
             # Otherwise - create new one.
-            contact = Contact.create(first_name, email)
+            contact = Contact.create(
+                user_email, FirstName=user_first_name,
+                LastName=user_last_name
+            )
 
         data = {
             'Name': title,
-            'FormCategory': category,
-            'TicketStatusID': TICKET_STATUS_NEW,
-            'TicketTypeID': TICKET_TYPE_SUPPORT,
+            'TicketStatusID': cls._get_ticket_status_new(),
+            'TicketTypeID': cls._get_ticket_type_support(),
             'ContactID': contact.id
         }
 
         ticket = Ticket(data=cls.get_client().create_ticket(data))
         ticket.set_description(description)
         return ticket
+
+    @classmethod
+    def _get_ticket_status_new(cls):
+        if cls.TICKET_STATUS_NEW is not None:
+            return cls.TICKET_STATUS_NEW
+
+        statuses = cls.get_client().get_ticket_statuses()
+        for status in statuses:
+            if status.find('Name').text.lower() == 'new':
+                cls.TICKET_STATUS_NEW = status.find('TicketStatusID').text
+                return cls.TICKET_STATUS_NEW
+
+    @classmethod
+    def _get_ticket_type_support(cls):
+        if cls.TICKET_TYPE_SUPPORT is not None:
+            return cls.TICKET_TYPE_SUPPORT
+
+        ticket_types = cls.get_client().get_ticket_types()
+        for ticket_type in ticket_types:
+            if ticket_type.find('Name').text.lower() == 'support':
+                cls.TICKET_TYPE_SUPPORT = ticket_type.find(
+                    'TicketTypeID').text
+                return cls.TICKET_TYPE_SUPPORT
 
     def delete(self):
         self.client.delete_ticket(self.id)
@@ -127,10 +155,11 @@ class Contact(XmlModel):
         return None
 
     @classmethod
-    def create(self, first_name, email):
+    def create(self, email, **data):
         client = self.get_client()
-        contact_xml = client.create_contact(
-            {'FirstName': first_name, 'Email': email})
+        contact_data = {'Email': email}
+        contact_data.update(data)
+        contact_xml = client.create_contact(contact_data)
         return Contact(data=contact_xml)
 
     def delete(self):

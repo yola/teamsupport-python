@@ -9,22 +9,23 @@ import unittest
 from teamsupport.models import Contact, Ticket
 
 
-class TestCreateTicket(unittest.TestCase):
-    first_name = 'Eugene Koval'
+class TestTicket(unittest.TestCase):
+    first_name = 'Eugene'
+    last_name = 'Koval'
     email = 'test@email.com'
-    ticket_category = 'category'
     ticket_name = 'test ticket dont touch'
     ticket_text = 'test descr dont touch'
 
+
+class TestCreateTicket(TestTicket):
     def setUp(self):
         self.ticket = Ticket.create(
-            self.first_name, self.email, self.ticket_category,
+            self.email, self.first_name, self.last_name,
             self.ticket_name, self.ticket_text)
         self.contact = Contact.get(self.email)
 
     def test_ticket_is_created(self):
         self.assertEqual(self.ticket.Name, self.ticket_name)
-        self.assertEqual(self.ticket.Formcategory, self.ticket_category)
 
     def test_ticket_description_is_set(self):
         description = self.ticket.get_description()
@@ -32,6 +33,7 @@ class TestCreateTicket(unittest.TestCase):
 
     def test_new_contact_is_created(self):
         self.assertEqual(self.contact.FirstName, self.first_name)
+        self.assertEqual(self.contact.LastName, self.last_name)
         self.assertEqual(self.contact.Email, self.email)
 
     def test_ticket_associated_with_contact(self):
@@ -45,24 +47,19 @@ class TestCreateTicket(unittest.TestCase):
         self.contact.delete()
 
 
-class TestCreateTicketForExistingContact(unittest.TestCase):
-    first_name = 'Eugene Koval'
-    email = 'test@email.com'
-    ticket_category = 'category'
-    ticket_name = 'test ticket dont touch'
-    ticket_text = 'test descr dont touch'
-
+class TestCreateTicketForExistingContact(TestTicket):
     def setUp(self):
         # Make sure contact with such email doesn't exist.
         contact = Contact.get(self.email)
         self.assertIsNone(contact)
 
         # Create contact manually.
-        self.contact = Contact.create(self.first_name, self.email)
+        self.contact = Contact.create(
+            self.email, FirstName=self.first_name, LastName=self.last_name)
 
         # Create ticket from same email as just created contact.
         self.ticket = Ticket.create(
-            self.first_name, self.email, self.ticket_category,
+            self.email, self.first_name, self.last_name,
             self.ticket_name, self.ticket_text)
 
         self.ticket_contact = Contact.get(self.email)

@@ -101,6 +101,14 @@ class TeamSupportService(XMLHTTPServiceClient):
             'tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
         return self.parse_xml_response(response)
 
+    def get_ticket_statuses(self):
+        response = self.get('properties/ticketstatuses/')
+        return self.parse_xml_response(response)
+
+    def get_ticket_types(self):
+        response = self.get('properties/tickettypes/')
+        return self.parse_xml_response(response)
+
     def update_ticket_action(self, ticket_id, action_id, data):
         response = self.put(
             'tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
