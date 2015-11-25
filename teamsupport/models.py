@@ -38,9 +38,8 @@ class Ticket(XmlModel):
         self.id = self.TicketID
 
     @classmethod
-    def create(
-            cls, user_email, user_first_name, user_last_name,
-            title, description, **params):
+    def create(cls, user_email, user_first_name, user_last_name, title,
+               description, **params):
         # We need to associate ticket with Contact, otherwise ticket doesn't
         # make sense. First, we try to find an existing contact.
         contact = Contact.get(user_email)
@@ -68,11 +67,10 @@ class Ticket(XmlModel):
         if cls.TICKET_STATUS_NEW is not None:
             return cls.TICKET_STATUS_NEW
 
-        statuses = cls.get_client().get_ticket_statuses()
-        for status in statuses:
-            if status.find('Name').text.lower() == 'new':
-                cls.TICKET_STATUS_NEW = status.find('TicketStatusID').text
-                return cls.TICKET_STATUS_NEW
+        ticket_statuses = cls.get_client().get_ticket_statuses()
+        cls.TICKET_STATUS_NEW = cls._find_element_id_by_attribute_value(
+            ticket_statuses, 'TicketStatusID', 'Name', 'New')
+        return cls.TICKET_STATUS_NEW
 
     @classmethod
     def _get_ticket_type_support(cls):
@@ -80,11 +78,16 @@ class Ticket(XmlModel):
             return cls.TICKET_TYPE_SUPPORT
 
         ticket_types = cls.get_client().get_ticket_types()
-        for ticket_type in ticket_types:
-            if ticket_type.find('Name').text.lower() == 'support':
-                cls.TICKET_TYPE_SUPPORT = ticket_type.find(
-                    'TicketTypeID').text
-                return cls.TICKET_TYPE_SUPPORT
+        cls.TICKET_TYPE_SUPPORT = cls._find_element_id_by_attribute_value(
+            ticket_types, 'TicketTypeID', 'Description', 'Support')
+        return cls.TICKET_TYPE_SUPPORT
+
+    @classmethod
+    def _find_element_id_by_attribute_value(
+            cls, xml_array, id_attr, value_attr, value):
+        for xml in xml_array:
+            if xml.find(value_attr).text.lower() == value.lower():
+                return xml.find(id_attr).text
 
     def delete(self):
         self.client.delete_ticket(self.id)
