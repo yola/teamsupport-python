@@ -95,7 +95,7 @@ class Ticket(XmlModel):
     def get_description(self):
         ticket_actions = self.client.get_ticket_actions(
             self.id, SystemActionTypeID=ACTION_TYPE_DESCRIPTION)
-        if len(ticket_actions) >= 1:
+        if ticket_actions:
             return ticket_actions[0].find('Description').text
         return None
 
