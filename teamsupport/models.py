@@ -79,7 +79,7 @@ class Ticket(XmlModel):
 
         ticket_types = cls.get_client().get_ticket_types()
         cls.TICKET_TYPE_SUPPORT = cls._find_element_id_by_attribute_value(
-            ticket_types, 'TicketTypeID', 'Description', 'Support')
+            ticket_types, 'TicketTypeID', 'Name', 'Support')
         return cls.TICKET_TYPE_SUPPORT
 
     @classmethod
