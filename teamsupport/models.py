@@ -57,6 +57,7 @@ class Ticket(XmlModel):
             'TicketTypeID': cls._get_ticket_type_support(),
             'ContactID': contact.id
         }
+        data.update(params)
 
         ticket = Ticket(data=cls.get_client().create_ticket(data))
         ticket.set_description(description)
