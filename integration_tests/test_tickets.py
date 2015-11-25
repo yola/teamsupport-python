@@ -19,9 +19,10 @@ class TestTicket(unittest.TestCase):
 
 class TestCreateTicket(TestTicket):
     def setUp(self):
-        self.ticket = Ticket.create(
+        self.returned_ticket = Ticket.create(
             self.email, self.first_name, self.last_name,
             self.ticket_name, self.ticket_text)
+        self.ticket = Ticket(self.returned_ticket.id)
         self.contact = Contact.get(self.email)
 
     def test_ticket_is_created(self):
@@ -41,6 +42,10 @@ class TestCreateTicket(TestTicket):
         contact = self.ticket.contacts[0]
         self.assertEqual(contact.FirstName, self.first_name)
         self.assertEqual(contact.Email, self.email)
+
+    def test_created_ticket_is_returned(self):
+        self.assertEqual(self.returned_ticket.id, self.ticket.id)
+        self.assertEqual(self.returned_ticket.Name, self.ticket.Name)
 
     def tearDown(self):
         self.ticket.delete()

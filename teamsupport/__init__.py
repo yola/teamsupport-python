@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from __future__ import absolute_import
 
-import teamsupport.config as config
+from teamsupport import config
 from teamsupport.models import Action, Ticket
 from teamsupport.services import TeamSupportService
 
