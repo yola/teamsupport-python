@@ -19,24 +19,23 @@ from tests import BaseTeamSupportServiceCase
 class TestTicket(BaseTeamSupportServiceCase):
     def setUp(self):
         super(TestTicket, self).setUp()
-        self.ticket_elemet = E.Ticket(E.TicketID('ID'))
+        self.ticket_element = E.Ticket(E.TicketID('ID'))
 
     def test_initialisation_with_id(self):
         self.response.content = '<Ticket><TicketID>ID</TicketID></Ticket>'
-
-        ticket = Ticket(self.client, ticket_id='ID')
+        ticket = Ticket(ticket_id='ID')
         self.assertEqual(ticket.id, 'ID')
 
     def test_initialisation_with_data(self):
-        ticket = Ticket(self.client, data=self.ticket_elemet)
+        ticket = Ticket(data=self.ticket_element)
         self.assertEqual(ticket.id, 'ID')
 
     def test_initialisation_fails_when_missing_args(self):
-        self.assertRaises(MissingArgumentError, Ticket, self.client)
+        self.assertRaises(MissingArgumentError, Ticket)
 
     def test_getattr(self):
         ticket_element = E.Ticket(E.TicketID('ID'), E.Field2('Test'))
-        ticket = Ticket(self.client, data=ticket_element)
+        ticket = Ticket(data=ticket_element)
         self.assertEqual(ticket.Field2, 'Test')
 
     def test_actions_property(self):
@@ -48,7 +47,7 @@ class TestTicket(BaseTeamSupportServiceCase):
             </Action>
         </Actions>"""
 
-        ticket = Ticket(self.client, data=self.ticket_elemet)
+        ticket = Ticket(data=self.ticket_element)
 
         actions = ticket.actions
         self.assertEqual(len(actions), 1)
@@ -66,7 +65,7 @@ class TestTicket(BaseTeamSupportServiceCase):
                 </Action>
             </Actions>"""
 
-        ticket = Ticket(self.client, data=self.ticket_elemet)
+        ticket = Ticket(data=self.ticket_element)
 
         actions = ticket.actions
         description_action = actions.get(Name='Description')
@@ -90,7 +89,7 @@ class TestAction(BaseTeamSupportServiceCase):
                 <Name>Description</Name>
             </Action>"""
 
-        action = Action(self.client, ticket_id='ID', action_id='ActionID')
+        action = Action(ticket_id='ID', action_id='ActionID')
         self.assertEqual(action.ticket_id, 'ID')
         self.assertEqual(action.id, 'ActionID')
 
@@ -100,10 +99,9 @@ class TestAction(BaseTeamSupportServiceCase):
         self.assertEqual(action.id, 'ActionID')
 
     def test_initialisation_fails_when_missing_args(self):
-        self.assertRaises(MissingArgumentError, Action, self.client)
-        self.assertRaises(MissingArgumentError, Action, self.client,
-                          ticket_id='ID')
-        self.assertRaises(MissingArgumentError, Action, self.client,
+        self.assertRaises(MissingArgumentError, Action)
+        self.assertRaises(MissingArgumentError, Action, ticket_id='ID')
+        self.assertRaises(MissingArgumentError, Action,
                           action_id='ActionID')
 
 

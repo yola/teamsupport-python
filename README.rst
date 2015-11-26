@@ -20,9 +20,10 @@ Usage
 
 ::
 
-    from teamsupport.services import TeamSupportService
+    from teamsupport.services import TeamSupportService, init
 
-    client = TeamSupportService(TEAMSUPPORT_ORG_ID, TEAMSUPPORT_AUTH_KEY)
+    init(<org_id>, <auth_key>)
+    client = TeamSupportService()
 
     # Fetch all tickets without custom fields
     tickets = client.get_tickets()
@@ -34,8 +35,10 @@ Usage
     # Get an action using the model
     from teamsupport.models import Action
     action =  Action(client, ticket_id, action_id)
-
     print(action.Description)  # Prints 'New description'
+
+    To run integration tests please set correct values in teamsupport/config.py
+    and run: `nosetests integration_tests`
 
 .. |Build Status| image:: https://img.shields.io/travis/yola/teamsupport-python.svg?style=flat-square
    :target: https://travis-ci.org/yola/teamsupport-python

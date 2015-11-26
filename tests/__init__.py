@@ -8,6 +8,7 @@ from lxml.builder import E
 from mock import Mock, patch
 from requests import Response, Session
 
+from teamsupport import init
 from teamsupport.services import TeamSupportService
 
 
@@ -51,7 +52,8 @@ class PatchedSessionXmlTests(PatchedSessionTests, XmlTestCase):
 class BaseTeamSupportServiceCase(PatchedSessionXmlTests):
     def setUp(self):
         super(BaseTeamSupportServiceCase, self).setUp()
-        self.client = TeamSupportService('org-id', 'auth-key')
+        init('org_id', 'auth_key')
+        self.client = TeamSupportService()
 
     def tearDown(self):
         super(BaseTeamSupportServiceCase, self).tearDown()

@@ -5,6 +5,7 @@ from __future__ import absolute_import
 from demands import HTTPServiceClient
 from lxml import etree
 
+from teamsupport import config
 from teamsupport.utils import to_xml
 
 
@@ -33,21 +34,40 @@ class XMLHTTPServiceClient(HTTPServiceClient):
 
 
 class TeamSupportService(XMLHTTPServiceClient):
-    def __init__(self, org_id, auth_token, **kwargs):
+    def __init__(self, **kwargs):
+        if config.ORG_ID is None or config.AUTH_KEY is None:
+            raise RuntimeError(
+                'You need to call init(<org_id>, <auth_key>) first.'
+                ' To run integration tests edit config.py manually')
+
         super(TeamSupportService, self).__init__(
             url='https://app.teamsupport.com/api/xml/',
-            auth=(org_id, auth_token), **kwargs)
-        self.org_id = org_id
-        self.auth_token = auth_token
+            auth=(config.ORG_ID, config.AUTH_KEY), **kwargs)
 
-    def get_tickets(self, query_params=None):
-        response = self.get('Tickets/', params=query_params)
+    def search_tickets(self, **query_params):
+        response = self.get('tickets/', params=query_params)
         content = self.parse_xml_response(response)
         return content
 
+    def search_contacts(self, **query_params):
+        response = self.get('contacts/', params=query_params)
+        return self.parse_xml_response(response)
+
+    def create_contact(self, data):
+        response = self.post(
+            'contacts/', root='Contact', data=data, send_as_xml=True)
+        return self.parse_xml_response(response)
+
+    def get_contact(self, contact_id):
+        response = self.get('contacts/{0}'.format(contact_id))
+        return self.parse_xml_response(response)
+
+    def delete_contact(self, contact_id):
+        self.delete('contacts/{}'.format(contact_id))
+
     def create_ticket(self, data):
         response = self.post(
-            'Tickets/', root='Ticket', data=data, send_as_xml=True)
+            'tickets', root='Ticket', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
     def get_ticket(self, ticket_id):
@@ -55,29 +75,55 @@ class TeamSupportService(XMLHTTPServiceClient):
         return self.parse_xml_response(response)
 
     def delete_ticket(self, ticket_id):
-        self.delete('Tickets/{0}'.format(ticket_id))
+        self.delete('tickets/{0}'.format(ticket_id))
 
     def update_ticket(self, ticket_id, data):
         response = self.put(
-            'Tickets/{0}'.format(ticket_id),
+            'tickets/{0}'.format(ticket_id),
             data=data, root='Ticket', send_as_xml=True)
         return self.parse_xml_response(response)
 
-    def get_ticket_actions(self, ticket_id):
-        response = self.get('Tickets/{0}/Actions'.format(ticket_id))
+    def get_ticket_actions(self, ticket_id, **query_params):
+        response = self.get(
+            'tickets/{0}/Actions'.format(ticket_id), params=query_params)
+        return self.parse_xml_response(response)
+
+    def get_ticket_contacts(self, ticket_id):
+        response = self.get('tickets/{0}/Contacts'.format(ticket_id))
+        return self.parse_xml_response(response)
+
+    def get_ticket_customers(self, ticket_id):
+        response = self.get('tickets/{0}/Customers'.format(ticket_id))
         return self.parse_xml_response(response)
 
     def get_ticket_action(self, ticket_id, action_id):
         response = self.get(
-            'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
+            'tickets/{0}/Actions/{1}'.format(ticket_id, action_id))
+        return self.parse_xml_response(response)
+
+    def get_ticket_statuses(self):
+        response = self.get('properties/ticketstatuses/')
+        return self.parse_xml_response(response)
+
+    def get_ticket_types(self):
+        response = self.get('properties/tickettypes/')
         return self.parse_xml_response(response)
 
     def update_ticket_action(self, ticket_id, action_id, data):
         response = self.put(
-            'Tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
+            'tickets/{0}/Actions/{1}'.format(ticket_id, action_id),
             root='Action', data=data, send_as_xml=True)
         return self.parse_xml_response(response)
 
     def get_user(self, user_id):
-        response = self.get('Users/{0}'.format(user_id))
+        response = self.get('users/{0}'.format(user_id))
+        return self.parse_xml_response(response)
+
+    def get_users(self, **query_params):
+        response = self.get('users/', params=query_params)
+        content = self.parse_xml_response(response)
+        return content
+
+    def get_customer_contacts(self, customer_id):
+        response = self.get('tickets/{0}/Customers'.format(customer_id))
         return self.parse_xml_response(response)
