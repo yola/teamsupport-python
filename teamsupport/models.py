@@ -1,11 +1,9 @@
 from property_caching import cached_property
 from querylist import QueryList
 
+from teamsupport import config
 from teamsupport.services import TeamSupportService
 from teamsupport.errors import MissingArgumentError
-
-
-ACTION_TYPE_DESCRIPTION = 1
 
 
 class XmlModel(object):
@@ -24,8 +22,9 @@ class XmlModel(object):
 
 
 class Ticket(XmlModel):
-    _TICKET_STATUS_NEW = None
-    _TICKET_TYPE_SUPPORT = None
+    _CACHED_TICKET_STATUS_ID = None
+    _CACHED_TICKET_TYPE_ID = None
+    _ACTION_TYPE_DESCRIPTION = 1
 
     def __init__(self, ticket_id=None, data=None):
         self.data = data
@@ -52,8 +51,10 @@ class Ticket(XmlModel):
 
         data = {
             'Name': title,
-            'TicketStatusID': cls._get_ticket_status_new(),
-            'TicketTypeID': cls._get_ticket_type_support(),
+            'TicketStatusID': cls._get_ticket_status_id(
+                config.DEFAULT_TICKET_STATUS),
+            'TicketTypeID': cls._get_ticket_type_id(
+                config.DEFAULT_TICKET_TYPE),
             'ContactID': contact.id
         }
         data.update(params)
@@ -63,24 +64,24 @@ class Ticket(XmlModel):
         return ticket
 
     @classmethod
-    def _get_ticket_status_new(cls):
-        if cls._TICKET_STATUS_NEW is not None:
-            return cls._TICKET_STATUS_NEW
+    def _get_ticket_status_id(cls, ticket_status):
+        if cls._CACHED_TICKET_STATUS_ID is not None:
+            return cls._CACHED_TICKET_STATUS_ID
 
         ticket_statuses = cls.get_client().get_ticket_statuses()
-        cls._TICKET_STATUS_NEW = cls._find_element_id_by_attribute_value(
-            ticket_statuses, 'TicketStatusID', 'Name', 'New')
-        return cls._TICKET_STATUS_NEW
+        cls._CACHED_TICKET_STATUS_ID = cls._find_element_id_by_attribute_value(
+            ticket_statuses, 'TicketStatusID', 'Name', ticket_status)
+        return cls._CACHED_TICKET_STATUS_ID
 
     @classmethod
-    def _get_ticket_type_support(cls):
-        if cls._TICKET_TYPE_SUPPORT is not None:
-            return cls._TICKET_TYPE_SUPPORT
+    def _get_ticket_type_id(cls, ticket_type):
+        if cls._CACHED_TICKET_TYPE_ID is not None:
+            return cls._CACHED_TICKET_TYPE_ID
 
         ticket_types = cls.get_client().get_ticket_types()
-        cls._TICKET_TYPE_SUPPORT = cls._find_element_id_by_attribute_value(
-            ticket_types, 'TicketTypeID', 'Name', 'Support')
-        return cls._TICKET_TYPE_SUPPORT
+        cls._CACHED_TICKET_TYPE_ID = cls._find_element_id_by_attribute_value(
+            ticket_types, 'TicketTypeID', 'Name', ticket_type)
+        return cls._CACHED_TICKET_TYPE_ID
 
     @classmethod
     def _find_element_id_by_attribute_value(
@@ -94,7 +95,7 @@ class Ticket(XmlModel):
 
     def get_description(self):
         ticket_actions = self.client.get_ticket_actions(
-            self.id, SystemActionTypeID=ACTION_TYPE_DESCRIPTION)
+            self.id, SystemActionTypeID=self._ACTION_TYPE_DESCRIPTION)
         if ticket_actions:
             return ticket_actions[0].find('Description').text
         return None
@@ -104,7 +105,7 @@ class Ticket(XmlModel):
         # automatically when the ticket is created. We need to query it's ID
         # and update this action to set ticket description.
         ticket_actions = self.client.get_ticket_actions(
-            self.id, SystemActionTypeID=ACTION_TYPE_DESCRIPTION)
+            self.id, SystemActionTypeID=self._ACTION_TYPE_DESCRIPTION)
         action_id = ticket_actions[0].find('ActionID').text
         self.client.update_ticket_action(
             self.id, action_id, {'Description': description})
