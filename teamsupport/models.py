@@ -24,8 +24,8 @@ class XmlModel(object):
 
 
 class Ticket(XmlModel):
-    TICKET_STATUS_NEW = None
-    TICKET_TYPE_SUPPORT = None
+    _TICKET_STATUS_NEW = None
+    _TICKET_TYPE_SUPPORT = None
 
     def __init__(self, ticket_id=None, data=None):
         self.data = data
@@ -64,30 +64,30 @@ class Ticket(XmlModel):
 
     @classmethod
     def _get_ticket_status_new(cls):
-        if cls.TICKET_STATUS_NEW is not None:
-            return cls.TICKET_STATUS_NEW
+        if cls._TICKET_STATUS_NEW is not None:
+            return cls._TICKET_STATUS_NEW
 
         ticket_statuses = cls.get_client().get_ticket_statuses()
-        cls.TICKET_STATUS_NEW = cls._find_element_id_by_attribute_value(
+        cls._TICKET_STATUS_NEW = cls._find_element_id_by_attribute_value(
             ticket_statuses, 'TicketStatusID', 'Name', 'New')
-        return cls.TICKET_STATUS_NEW
+        return cls._TICKET_STATUS_NEW
 
     @classmethod
     def _get_ticket_type_support(cls):
-        if cls.TICKET_TYPE_SUPPORT is not None:
-            return cls.TICKET_TYPE_SUPPORT
+        if cls._TICKET_TYPE_SUPPORT is not None:
+            return cls._TICKET_TYPE_SUPPORT
 
         ticket_types = cls.get_client().get_ticket_types()
-        cls.TICKET_TYPE_SUPPORT = cls._find_element_id_by_attribute_value(
+        cls._TICKET_TYPE_SUPPORT = cls._find_element_id_by_attribute_value(
             ticket_types, 'TicketTypeID', 'Name', 'Support')
-        return cls.TICKET_TYPE_SUPPORT
+        return cls._TICKET_TYPE_SUPPORT
 
     @classmethod
     def _find_element_id_by_attribute_value(
-            cls, xml_array, id_attr, value_attr, value):
-        for xml in xml_array:
-            if xml.find(value_attr).text.lower() == value.lower():
-                return xml.find(id_attr).text
+            cls, elements, id_attr, value_attr, value):
+        for element in elements:
+            if element.find(value_attr).text.lower() == value.lower():
+                return element.find(id_attr).text
 
     def delete(self):
         self.client.delete_ticket(self.id)
