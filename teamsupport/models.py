@@ -22,8 +22,8 @@ class XmlModel(object):
 
 
 class Ticket(XmlModel):
-    _TICKET_STATUS_NEW = None
-    _TICKET_TYPE_SUPPORT = None
+    _CACHED_TICKET_STATUS_ID = None
+    _CACHED_TICKET_TYPE_ID = None
     _ACTION_TYPE_DESCRIPTION = 1
 
     def __init__(self, ticket_id=None, data=None):
@@ -65,23 +65,23 @@ class Ticket(XmlModel):
 
     @classmethod
     def _get_ticket_status_id(cls, ticket_status):
-        if cls._TICKET_STATUS_NEW is not None:
-            return cls._TICKET_STATUS_NEW
+        if cls._CACHED_TICKET_STATUS_ID is not None:
+            return cls._CACHED_TICKET_STATUS_ID
 
         ticket_statuses = cls.get_client().get_ticket_statuses()
-        cls._TICKET_STATUS_NEW = cls._find_element_id_by_attribute_value(
+        cls._CACHED_TICKET_STATUS_ID = cls._find_element_id_by_attribute_value(
             ticket_statuses, 'TicketStatusID', 'Name', ticket_status)
-        return cls._TICKET_STATUS_NEW
+        return cls._CACHED_TICKET_STATUS_ID
 
     @classmethod
     def _get_ticket_type_id(cls, ticket_type):
-        if cls._TICKET_TYPE_SUPPORT is not None:
-            return cls._TICKET_TYPE_SUPPORT
+        if cls._CACHED_TICKET_TYPE_ID is not None:
+            return cls._CACHED_TICKET_TYPE_ID
 
         ticket_types = cls.get_client().get_ticket_types()
-        cls._TICKET_TYPE_SUPPORT = cls._find_element_id_by_attribute_value(
+        cls._CACHED_TICKET_TYPE_ID = cls._find_element_id_by_attribute_value(
             ticket_types, 'TicketTypeID', 'Name', ticket_type)
-        return cls._TICKET_TYPE_SUPPORT
+        return cls._CACHED_TICKET_TYPE_ID
 
     @classmethod
     def _find_element_id_by_attribute_value(
