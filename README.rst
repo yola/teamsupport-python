@@ -20,22 +20,23 @@ Usage
 
 ::
 
-    from teamsupport.services import TeamSupportService, init
+    from teamsupport import Ticket, init
 
     init(<org_id>, <auth_key>)
-    client = TeamSupportService()
 
-    # Fetch all tickets without custom fields
-    tickets = client.get_tickets()
+    # Get ticket with given ID/Number.
+    ticket = Ticket(<ticket_number_or_ticket_id>)
 
-    # Update description of a ticket
-    client.update_ticket_action(
-        ticket_id, action_id, data={'Description': 'New description'})
+    # Create new ticket.
+    ticket = Ticket.create(
+        contact_email, contact_first_name, contact_last_name,
+        ticket_name, ticket_text)
 
-    # Get an action using the model
-    from teamsupport.models import Action
-    action =  Action(client, ticket_id, action_id)
-    print(action.Description)  # Prints 'New description'
+    # Get Ticket description.
+    descr = ticket.get_description()
+
+    # Update ticket description.
+    ticket.set_decription('New description')
 
     To run integration tests please set correct values in teamsupport/config.py
     and run: `nosetests integration_tests`
