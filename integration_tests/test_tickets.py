@@ -5,6 +5,7 @@ integration_tests.test_tickets
 Integration tests for the client
 """
 import unittest
+import uuid
 
 from teamsupport.models import Contact, Ticket
 
@@ -15,6 +16,10 @@ class TestTicket(unittest.TestCase):
     email = 'test@email.com'
     ticket_name = 'test ticket dont touch'
     ticket_text = 'test descr dont touch'
+
+    @property
+    def random_name(self):
+        return uuid.uuid4().hex
 
 
 class TestCreateTicket(TestTicket):
@@ -78,3 +83,60 @@ class TestCreateTicketForExistingContact(TestTicket):
     def tearDown(self):
         self.ticket.delete()
         self.contact.delete()
+
+
+class TestSearchTickets(TestTicket):
+    def setUp(self):
+        self.created_ticket_name = self.random_name
+        self.ticket = Ticket.create(
+            self.email, self.first_name, self.last_name,
+            self.created_ticket_name, self.ticket_text)
+        self.found_tickets = Ticket.search(Name=self.created_ticket_name)
+
+    def test_created_ticket_found(self):
+        self.assertEqual(len(self.found_tickets), 1)
+        self.assertEqual(self.found_tickets[0].Name, self.created_ticket_name)
+
+    def tearDown(self):
+        ticket_contacts = self.ticket.contacts
+        [t.delete() for t in self.found_tickets]
+        [c.delete() for c in ticket_contacts]
+
+
+class TestDeleteTicket(TestTicket):
+    def setUp(self):
+        self.created_ticket_name = self.random_name
+        self.ticket = Ticket.create(
+            self.email, self.first_name, self.last_name,
+            self.created_ticket_name, self.ticket_text)
+        self.assertEqual(len(Ticket.search(Name=self.created_ticket_name)), 1)
+
+        self.contacts = self.ticket.contacts
+        self.ticket.delete()
+        self.found_tickets = Ticket.search(Name=self.created_ticket_name)
+
+    def test_ticket_is_deleted(self):
+        self.assertEqual(self.found_tickets, [])
+
+    def tearDown(self):
+        [c.delete() for c in self.contacts]
+
+
+class TestUpdateTicket(TestTicket):
+    NEW_NAME = 'new name'
+
+    def setUp(self):
+        self.created_ticket_name = self.random_name
+        self.ticket = Ticket.create(
+            self.email, self.first_name, self.last_name,
+            self.created_ticket_name, self.ticket_text)
+        self.ticket.update(Name=self.NEW_NAME)
+        self.ticket = Ticket(self.ticket.id)
+
+    def test_ticket_name_is_updated(self):
+        self.assertEqual(self.ticket.Name, self.NEW_NAME)
+
+    def tearDown(self):
+        contacts = self.ticket.contacts
+        self.ticket.delete()
+        [c.delete() for c in contacts]
