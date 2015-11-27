@@ -1,6 +1,7 @@
 Python TeamSupport Client
 =========================
 
+
 |Build Status| |Latest Version|
 
 Python library for interfacing with the TeamSupport XML API, using `demands <https://github.com/yola/demands>`__.
@@ -38,10 +39,11 @@ Usage
     # Update ticket description.
     ticket.set_decription('New description')
 
-    To run integration tests please set correct values in teamsupport/config.py
+    To run integration tests please set correct values in `teamsupport/config.py`
     and run: `nosetests integration_tests`
 
 .. |Build Status| image:: https://img.shields.io/travis/yola/teamsupport-python.svg?style=flat-square
    :target: https://travis-ci.org/yola/teamsupport-python
 .. |Latest Version| image:: https://img.shields.io/pypi/v/teamsupport.svg?style=flat-square
    :target: https://warehouse.python.org/project/teamsupport
+

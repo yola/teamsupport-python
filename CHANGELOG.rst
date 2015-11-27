@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.2.1 (2015-11-27)
+------------------
+
+- Fix README.rst formatting.
+
 0.2.0 (2015-11-26)
 ------------------
 
@@ -9,7 +14,7 @@ Changelog
 -  Change models constructors to not require `client` param.
 
 0.1.3 (2015-09-13)
-----------------
+------------------
 
 -  Fix bug in `update_ticket` method
 
