@@ -4,10 +4,8 @@ integration_tests.test_tickets
 
 Integration tests for the client
 """
-import random
-import string
-
 import unittest
+import uuid
 
 from teamsupport.models import Contact, Ticket
 
@@ -21,9 +19,7 @@ class TestTicket(unittest.TestCase):
 
     @property
     def random_name(self):
-        letters_list = list(string.letters)
-        random.shuffle(letters_list)
-        return ''.join(letters_list)
+        return uuid.uuid4().hex
 
 
 class TestCreateTicket(TestTicket):

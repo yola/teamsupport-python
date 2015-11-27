@@ -71,6 +71,7 @@ class Ticket(XmlModel):
 
     def update(self, **data):
         self.data = self.client.update_ticket(self.id, data)
+        return self
 
     @classmethod
     def _get_ticket_status_id(cls, ticket_status):
