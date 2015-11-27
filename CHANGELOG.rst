@@ -4,7 +4,7 @@ Changelog
 0.2.1 (2015-11-27)
 ------------------
 
-- Trying to fix README.rst formatting.
+- Fix README.rst formatting.
 
 0.2.0 (2015-11-26)
 ------------------
