@@ -134,8 +134,8 @@ class TestUpdateTicket(TestTicket):
         self.ticket = Ticket.create(
             self.email, self.first_name, self.last_name,
             self.created_ticket_name, self.ticket_text)
-        self.returned_ticket = self.ticket.update(Name=self.NEW_NAME)
-        self.ticket = Ticket(self.returned_ticket.id)
+        self.ticket.update(Name=self.NEW_NAME)
+        self.ticket = Ticket(self.ticket.id)
 
     def test_ticket_name_is_updated(self):
         self.assertEqual(self.ticket.Name, self.NEW_NAME)

@@ -70,7 +70,7 @@ class Ticket(XmlModel):
                 for data in client.search_tickets(**query_params)]
 
     def update(self, **data):
-        return Ticket(data=self.client.update_ticket(self.id, data))
+        self.data = self.client.update_ticket(self.id, data)
 
     @classmethod
     def _get_ticket_status_id(cls, ticket_status):
