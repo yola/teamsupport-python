@@ -30,7 +30,7 @@ class Ticket(XmlModel):
         self.data = data
         if ticket_id:
             self.data = self.client.get_ticket(ticket_id)
-        elif not self.data:
+        elif self.data is None:
             raise MissingArgumentError(
                 "__init__() needs either a 'ticket_id' or 'data' argument "
                 '(neither given)')
@@ -62,6 +62,15 @@ class Ticket(XmlModel):
         ticket = Ticket(data=cls.get_client().create_ticket(data))
         ticket.set_description(description)
         return ticket
+
+    @classmethod
+    def search(cls, **query_params):
+        client = cls.get_client()
+        return [Ticket(data=data)
+                for data in client.search_tickets(**query_params)]
+
+    def update(self, **data):
+        return Ticket(data=self.client.update_ticket(self.id, data))
 
     @classmethod
     def _get_ticket_status_id(cls, ticket_status):
@@ -96,7 +105,7 @@ class Ticket(XmlModel):
     def get_description(self):
         ticket_actions = self.client.get_ticket_actions(
             self.id, SystemActionTypeID=self._ACTION_TYPE_DESCRIPTION)
-        if ticket_actions:
+        if ticket_actions is not None:
             return ticket_actions[0].find('Description').text
         return None
 

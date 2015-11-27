@@ -1,6 +1,12 @@
 Changelog
 =========
 
+
+0.2.2 (2015-11-27)
+------------------
+
+- Add Ticket.search() and Ticket.update() methods.
+
 0.2.1 (2015-11-27)
 ------------------
 
