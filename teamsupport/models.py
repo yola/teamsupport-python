@@ -1,5 +1,4 @@
-from datetime import datetime
-
+from dateutil.parser import parse
 from property_caching import cached_property
 from querylist import QueryList
 
@@ -10,19 +9,18 @@ from teamsupport.errors import MissingArgumentError
 
 class XmlModel(object):
     datetime_fields = ('DateCreated', 'DateModified')
-    datetime_format = '%m/%d/%Y %H:%M %p'
 
     def __getattr__(self, name):
         value = None
-        if self.data.find(name) is not None:
-            value = self.data.find(name).text
+        value = self.data.find(name)
+        if value is None:
+            raise AttributeError(name)
+
+        value = value.text
         if name in self.datetime_fields:
-            value = datetime.strptime(value, '%m/%d/%Y %H:%M %p')
+            value = parse(value)
 
-        if value:
-            return value
-
-        raise AttributeError(name)
+        return value
 
     @classmethod
     def get_client(cls):
