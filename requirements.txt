@@ -5,5 +5,6 @@ funcsigs<0.5
 nose<2.0.0
 pinocchio<1.0.0
 property-caching>=1.0.3
+python-dateutil==2.4.2
 querylist>=0.2.0
 six==1.9.0

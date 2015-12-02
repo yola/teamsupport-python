@@ -1,6 +1,10 @@
 Changelog
 =========
 
+0.3.0 (2015-12-01)
+------------------
+
+- Automatically convert DateTime fields to datetime type for Ticket model.
 
 0.2.2 (2015-11-27)
 ------------------

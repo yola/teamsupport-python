@@ -23,13 +23,13 @@ requirements = [
     'lxml>=3.4.4',
     'property-caching>=1.0.3',
     'querylist>=0.2.0',
-    'six==1.9.0',
+    'six<2.0.0',
+    'python-dateutil<3.0.0',
 ]
 
 test_requirements = [
-    'mock>=1.2.0',
-    # Not explicitly required by mock 1.2.0
-    'funcsigs',
+    'mock<1.2.0',
+    'funcsigs<0.5',
 ]
 
 setup(
