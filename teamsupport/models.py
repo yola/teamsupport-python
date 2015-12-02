@@ -11,7 +11,6 @@ class XmlModel(object):
     datetime_fields = ('DateCreated', 'DateModified')
 
     def __getattr__(self, name):
-        value = None
         value = self.data.find(name)
         if value is None:
             raise AttributeError(name)
