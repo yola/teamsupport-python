@@ -4,6 +4,7 @@ integration_tests.test_tickets
 
 Integration tests for the client
 """
+from datetime import datetime
 import unittest
 import uuid
 
@@ -51,6 +52,10 @@ class TestCreateTicket(TestTicket):
     def test_created_ticket_is_returned(self):
         self.assertEqual(self.returned_ticket.id, self.ticket.id)
         self.assertEqual(self.returned_ticket.Name, self.ticket.Name)
+
+    def test_datetimes_are_converted_to_datetime_type(self):
+        self.assertIsInstance(self.returned_ticket.DateCreated, datetime)
+        self.assertIsInstance(self.returned_ticket.DateModified, datetime)
 
     def tearDown(self):
         self.ticket.delete()
