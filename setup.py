@@ -23,8 +23,8 @@ requirements = [
     'lxml>=3.4.4',
     'property-caching>=1.0.3',
     'querylist>=0.2.0',
-    'six==1.9.0',
-    'python-dateutil==2.4.2',
+    'six<2.0.0',
+    'python-dateutil<3.0.0',
     'mock<1.2.0',
 ]
 
