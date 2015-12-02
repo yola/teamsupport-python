@@ -25,6 +25,7 @@ requirements = [
     'querylist>=0.2.0',
     'six==1.9.0',
     'python-dateutil==2.4.2',
+    'mock<1.2.0',
 ]
 
 test_requirements = [
