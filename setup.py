@@ -25,13 +25,11 @@ requirements = [
     'querylist>=0.2.0',
     'six<2.0.0',
     'python-dateutil<3.0.0',
-    'mock<1.2.0',
 ]
 
 test_requirements = [
-    'mock>=1.2.0',
-    # Not explicitly required by mock 1.2.0
-    'funcsigs',
+    'mock<1.2.0',
+    'funcsigs<0.5',
 ]
 
 setup(
