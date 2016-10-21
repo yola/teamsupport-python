@@ -1,4 +1,4 @@
-demands>=1.1.0
+demands==4.0.0
 lxml>=3.4.4
 mock<1.2.0
 funcsigs<0.5
