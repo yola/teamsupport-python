@@ -36,7 +36,11 @@ class XmlTestCase(unittest.TestCase):
     def setUp(self):
         super(XmlTestCase, self).setUp()
         self.xml_element = E.OuterField(
-            E.Field1('Test field'))
+            E.Field1('Test field')
+        )
+        self.xml_element_bool_field = E.OuterField(
+            E.BoolField('True')
+        )
         self.xml_element_string = etree.tostring(
             self.xml_element, encoding='utf-8', xml_declaration=True,
             pretty_print=True)

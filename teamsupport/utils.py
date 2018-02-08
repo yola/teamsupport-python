@@ -7,6 +7,6 @@ def to_xml(root, data):
 
     for k, v in iteritems(data):
         child = etree.SubElement(xml, k)
-        child.text = v
+        child.text = str(v) if v is not None else v
 
     return xml
