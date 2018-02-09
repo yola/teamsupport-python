@@ -30,6 +30,14 @@ class TestToXml(XmlTestCase):
         result = to_xml(**params)
         self.assertEqualXml(result, self.xml_element_bool_field)
 
+    def test_to_xml_succeeds_with_none_value(self):
+        params = {
+            'data': {'NoneField': None},
+            'root': 'OuterField',
+        }
+        result = to_xml(**params)
+        self.assertEqualXml(result, self.xml_element_empty_field)
+
 
 if __name__ == '__main__':
     unittest.main()
