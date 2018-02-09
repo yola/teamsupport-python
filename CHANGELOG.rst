@@ -1,6 +1,11 @@
 Changelog
 =========
 
+0.4.1 (2018-02-08)
+------------------
+
+- Convert input data to str when composing XML.
+
 0.4.0 (2016-10-21)
 ----------------
 
