@@ -47,3 +47,12 @@ Usage
 .. |Latest Version| image:: https://img.shields.io/pypi/v/teamsupport.svg?style=flat-square
    :target: https://warehouse.python.org/project/teamsupport
 
+
+Running Tests
+-------------
+
+Set correct data in teasmsupport/config.py
+
+::
+
+    nosetests
