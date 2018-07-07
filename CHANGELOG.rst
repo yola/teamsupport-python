@@ -6,6 +6,8 @@ Changelog
 
 - Switched to JSON API.
 - Set correct ticket status when creating a ticket
+- Added ability to modify default ticket type and status when calling
+  teamsupport.init()
 
 
 0.4.1 (2018-02-08)

@@ -23,7 +23,7 @@ Usage
 
     from teamsupport import Ticket, init
 
-    init(<org_id>, <auth_key>)
+    init(<org_id>, <auth_key>[, default_ticket_type=<>, default_ticket_status=<>])
 
     # Get ticket with given ID/Number.
     ticket = Ticket(<ticket_number_or_ticket_id>)
