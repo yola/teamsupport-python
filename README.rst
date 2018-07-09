@@ -23,7 +23,7 @@ Usage
 
     from teamsupport import Ticket, init
 
-    init(<org_id>, <auth_key>)
+    init(<org_id>, <auth_key>[, default_ticket_type=<>, default_ticket_status=<>])
 
     # Get ticket with given ID/Number.
     ticket = Ticket(<ticket_number_or_ticket_id>)
@@ -47,3 +47,12 @@ Usage
 .. |Latest Version| image:: https://img.shields.io/pypi/v/teamsupport.svg?style=flat-square
    :target: https://warehouse.python.org/project/teamsupport
 
+
+Running Tests
+-------------
+
+Set correct data in teamsupport/config.py
+
+::
+
+    nosetests

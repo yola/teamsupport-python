@@ -20,7 +20,6 @@ with open('CHANGELOG.rst') as changelog_file:
 
 requirements = [
     'demands>=4.0.0, < 5.0.0',
-    'lxml>=3.4.4',
     'property-caching>=1.0.3',
     'querylist>=0.2.0',
     'six<2.0.0',
@@ -56,8 +55,8 @@ setup(
         'Programming Language :: Python :: 2',
         'Programming Language :: Python :: 2.7',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.3',
         'Programming Language :: Python :: 3.4',
+        'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: Implementation :: PyPy',
         'Topic :: Software Development :: Libraries',
     ],

@@ -8,8 +8,7 @@ test_models
 Tests for `teamsupport.models` module.
 """
 import unittest
-
-from lxml.builder import E
+from dateutil.parser import parse
 
 from teamsupport.errors import MissingArgumentError
 from teamsupport.models import Action, Ticket
@@ -19,84 +18,58 @@ from tests import BaseTeamSupportServiceCase
 class TestTicket(BaseTeamSupportServiceCase):
     def setUp(self):
         super(TestTicket, self).setUp()
-        self.ticket_element = E.Ticket(E.TicketID('ID'))
+        self.data = {
+            'TicketID': 'ID',
+            'DateCreated': '2018-01-01 00:00:00',
+            'DateModified': '2018-01-01 00:00:00'
+        }
 
     def test_initialisation_with_id(self):
-        self.response.content = '<Ticket><TicketID>ID</TicketID></Ticket>'
-        ticket = Ticket(ticket_id='ID')
-        self.assertEqual(ticket.id, 'ID')
+        self.response.json.return_value = {'Ticket': self.data}
+        ticket = Ticket('ID')
+        self.assertEqual(ticket.id, self.data['TicketID'])
+        self.assertEqual(ticket.DateCreated, parse(self.data['DateCreated']))
+        self.assertEqual(
+            ticket.DateModified, parse(self.data['DateModified']))
 
     def test_initialisation_with_data(self):
-        ticket = Ticket(data=self.ticket_element)
-        self.assertEqual(ticket.id, 'ID')
+        ticket = Ticket(data=self.data)
+        self.assertEqual(ticket.id, self.data['TicketID'])
+        self.assertEqual(ticket.DateCreated, parse(self.data['DateCreated']))
+        self.assertEqual(
+            ticket.DateModified, parse(self.data['DateModified']))
 
     def test_initialisation_fails_when_missing_args(self):
         self.assertRaises(MissingArgumentError, Ticket)
-
-    def test_getattr(self):
-        ticket_element = E.Ticket(E.TicketID('ID'), E.Field2('Test'))
-        ticket = Ticket(data=ticket_element)
-        self.assertEqual(ticket.Field2, 'Test')
-
-    def test_actions_property(self):
-        self.response.content = """<Actions>
-            <Action>
-                <ID>ActionID</ID>
-                <TicketID>ID</TicketID>
-                <Name>Description</Name>
-            </Action>
-        </Actions>"""
-
-        ticket = Ticket(data=self.ticket_element)
-
-        actions = ticket.actions
-        self.assertEqual(len(actions), 1)
-        self.assertIsInstance(actions[0], Action)
-        self.assertEqual(actions[0].id, 'ActionID')
-        self.assertEqual(actions[0].ticket_id, 'ID')
-        self.assertEqual(actions[0].Name, 'Description')
-
-    def test_actions_querylist(self):
-        self.response.content = """<Actions>
-                <Action>
-                    <ID>ActionID</ID>
-                    <TicketID>ID</TicketID>
-                    <Name>Description</Name>
-                </Action>
-            </Actions>"""
-
-        ticket = Ticket(data=self.ticket_element)
-
-        actions = ticket.actions
-        description_action = actions.get(Name='Description')
-        self.assertIsInstance(description_action, Action)
-        self.assertEqual(description_action.id, 'ActionID')
-        self.assertEqual(description_action.ticket_id, 'ID')
 
 
 class TestAction(BaseTeamSupportServiceCase):
     def setUp(self):
         super(TestAction, self).setUp()
-        self.action_element = E.Action(
-            E.ID('ActionID'),
-            E.TicketID('ID'),
-            E.Name('Description'))
+        self.action_data = {
+            'ID': 'ActionID',
+            'TicketID': 'TicketID',
+            'Name': 'Name'
+        }
 
     def test_initialisation_with_ids(self):
-        self.response.content = """<Action>
-                <ID>ActionID</ID>
-                <TicketID>ID</TicketID>
-                <Name>Description</Name>
-            </Action>"""
+        self.action_data = {
+            'ActionID': 'ActionID',
+            'TicketID': 'TicketID',
+            'Name': 'Name'
+        }
+        self.response.json.return_value = {
+            'Action': self.action_data}
 
-        action = Action(ticket_id='ID', action_id='ActionID')
-        self.assertEqual(action.ticket_id, 'ID')
+        action = Action(ticket_id='TicketID', action_id='ActionID')
+        self.assertEqual(action.ticket_id, 'TicketID')
         self.assertEqual(action.id, 'ActionID')
 
     def test_initialisation_with_data(self):
-        action = Action(self.client, data=self.action_element)
-        self.assertEqual(action.ticket_id, 'ID')
+        action = Action(self.client, data=self.action_data)
+        self.assertEqual(action.ticket_id, 'TicketID')
         self.assertEqual(action.id, 'ActionID')
+        self.assertEqual(action.Name, 'Name')
 
     def test_initialisation_fails_when_missing_args(self):
         self.assertRaises(MissingArgumentError, Action)

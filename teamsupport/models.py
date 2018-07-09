@@ -7,15 +7,23 @@ from teamsupport.services import TeamSupportService
 from teamsupport.errors import MissingArgumentError
 
 
-class XmlModel(object):
+def _find_dict_matching_items(list_of_dicts, **kwargs):
+    for dct in list_of_dicts:
+        for (key, value) in kwargs.items():
+            if dct.get(key) != value:
+                break
+        else:
+            return dct
+
+
+class TSModel(object):
     datetime_fields = ('DateCreated', 'DateModified')
 
     def __getattr__(self, name):
-        value = self.data.find(name)
+        value = self.data.get(name)
         if value is None:
             raise AttributeError(name)
 
-        value = value.text
         if name in self.datetime_fields:
             value = parse(value)
 
@@ -30,9 +38,9 @@ class XmlModel(object):
         return self.get_client()
 
 
-class Ticket(XmlModel):
-    _CACHED_TICKET_STATUS_ID = None
-    _CACHED_TICKET_TYPE_ID = None
+class Ticket(TSModel):
+    _CACHED_TICKET_STATUSES = None
+    _CACHED_TICKET_TYPES = None
     _ACTION_TYPE_DESCRIPTION = 1
 
     def __init__(self, ticket_id=None, data=None):
@@ -43,7 +51,9 @@ class Ticket(XmlModel):
             raise MissingArgumentError(
                 "__init__() needs either a 'ticket_id' or 'data' argument "
                 '(neither given)')
-        self.id = self.TicketID
+
+        id_attr = 'ID' if 'ID' in self.data else 'TicketID'
+        self.id = self.data[id_attr]
 
     @classmethod
     def create(cls, user_email, user_first_name, user_last_name, title,
@@ -58,13 +68,15 @@ class Ticket(XmlModel):
                 LastName=user_last_name
             )
 
+        ticket_type_id = cls._get_ticket_type_id(config.DEFAULT_TICKET_TYPE)
+
         data = {
             'Name': title,
+            'ContactID': contact.id,
             'TicketStatusID': cls._get_ticket_status_id(
-                config.DEFAULT_TICKET_STATUS),
-            'TicketTypeID': cls._get_ticket_type_id(
-                config.DEFAULT_TICKET_TYPE),
-            'ContactID': contact.id
+                ticket_type_id, config.DEFAULT_TICKET_STATUS),
+            'TicketTypeID': ticket_type_id,
+            'IsVisibleOnPortal': True,
         }
         data.update(params)
 
@@ -83,31 +95,34 @@ class Ticket(XmlModel):
         return self
 
     @classmethod
-    def _get_ticket_status_id(cls, ticket_status):
-        if cls._CACHED_TICKET_STATUS_ID is not None:
-            return cls._CACHED_TICKET_STATUS_ID
-
-        ticket_statuses = cls.get_client().get_ticket_statuses()
-        cls._CACHED_TICKET_STATUS_ID = cls._find_element_id_by_attribute_value(
-            ticket_statuses, 'TicketStatusID', 'Name', ticket_status)
-        return cls._CACHED_TICKET_STATUS_ID
+    def _get_ticket_status_id(cls, ticket_type_id, ticket_status_name):
+        statuses = cls._get_ticket_statuses()
+        status_dict = _find_dict_matching_items(
+            statuses, TicketTypeID=ticket_type_id, Name=ticket_status_name)
+        return status_dict['ID'] if status_dict else None
 
     @classmethod
-    def _get_ticket_type_id(cls, ticket_type):
-        if cls._CACHED_TICKET_TYPE_ID is not None:
-            return cls._CACHED_TICKET_TYPE_ID
-
-        ticket_types = cls.get_client().get_ticket_types()
-        cls._CACHED_TICKET_TYPE_ID = cls._find_element_id_by_attribute_value(
-            ticket_types, 'TicketTypeID', 'Name', ticket_type)
-        return cls._CACHED_TICKET_TYPE_ID
+    def _get_ticket_type_id(cls, ticket_type_name):
+        ticket_types = cls._get_ticket_types()
+        type_dict = _find_dict_matching_items(
+            ticket_types, Name=ticket_type_name)
+        return type_dict['ID'] if type_dict else None
 
     @classmethod
-    def _find_element_id_by_attribute_value(
-            cls, elements, id_attr, value_attr, value):
-        for element in elements:
-            if element.find(value_attr).text.lower() == value.lower():
-                return element.find(id_attr).text
+    def _get_ticket_statuses(cls):
+        if cls._CACHED_TICKET_STATUSES is not None:
+            return cls._CACHED_TICKET_STATUSES
+
+        cls._CACHED_TICKET_STATUSES = cls.get_client().get_ticket_statuses()
+        return cls._CACHED_TICKET_STATUSES
+
+    @classmethod
+    def _get_ticket_types(cls):
+        if cls._CACHED_TICKET_TYPES is not None:
+            return cls._CACHED_TICKET_TYPES
+
+        cls._CACHED_TICKET_TYPES = cls.get_client().get_ticket_types()
+        return cls._CACHED_TICKET_TYPES
 
     def delete(self):
         self.client.delete_ticket(self.id)
@@ -116,7 +131,7 @@ class Ticket(XmlModel):
         ticket_actions = self.client.get_ticket_actions(
             self.id, SystemActionTypeID=self._ACTION_TYPE_DESCRIPTION)
         if ticket_actions is not None:
-            return ticket_actions[0].find('Description').text
+            return ticket_actions[0]['Description']
         return None
 
     def set_description(self, description):
@@ -125,7 +140,7 @@ class Ticket(XmlModel):
         # and update this action to set ticket description.
         ticket_actions = self.client.get_ticket_actions(
             self.id, SystemActionTypeID=self._ACTION_TYPE_DESCRIPTION)
-        action_id = ticket_actions[0].find('ActionID').text
+        action_id = ticket_actions[0]['ID']
         self.client.update_ticket_action(
             self.id, action_id, {'Description': description})
 
@@ -133,25 +148,25 @@ class Ticket(XmlModel):
     def actions(self):
         actions = self.client.get_ticket_actions(self.id)
         return QueryList(
-            [Action(data=action)
-                for action in actions.findall('Action')], wrap=False)
+            [Action(data=action) for action in actions], wrap=False
+        )
 
     @cached_property
     def contacts(self):
         contacts = self.client.get_ticket_contacts(self.id)
         return QueryList(
-            [Contact(data=contact)
-                for contact in contacts.findall('Contact')], wrap=False)
+            [Contact(data=contact) for contact in contacts], wrap=False
+        )
 
     @cached_property
     def customers(self):
         customers = self.client.get_ticket_customers(self.id)
         return QueryList(
-            [Customer(data=customer)
-                for customer in customers.findall('Customer')], wrap=False)
+            [Customer(data=customer) for customer in customers], wrap=False
+        )
 
 
-class Action(XmlModel):
+class Action(TSModel):
     def __init__(self, ticket_id=None, action_id=None, data=None):
         self.data = data
         if action_id and ticket_id:
@@ -161,13 +176,16 @@ class Action(XmlModel):
                 "__init__() needs either both a 'ticket_id' and 'action_id' "
                 "or a 'data' argument (neither given)")
         self.ticket_id = self.TicketID
-        self.id = self.ID
+
+        id_attr = 'ID' if 'ID' in self.data else 'ActionID'
+        self.id = self.data[id_attr]
 
 
-class Contact(XmlModel):
+class Contact(TSModel):
     def __init__(self, data):
         self.data = data
-        self.id = self.ContactID
+        id_attr = 'ID' if 'ID' in self.data else 'ContactID'
+        self.id = self.data[id_attr]
 
     @classmethod
     def get(cls, email):
@@ -183,17 +201,18 @@ class Contact(XmlModel):
         client = self.get_client()
         contact_data = {'Email': email}
         contact_data.update(data)
-        contact_xml = client.create_contact(contact_data)
-        return Contact(data=contact_xml)
+        contact_data = client.create_contact(contact_data)
+        return Contact(data=contact_data)
 
     def delete(self):
         self.client.delete_contact(self.id)
 
 
-class Customer(XmlModel):
+class Customer(TSModel):
     def __init__(self, data):
         self.data = data
-        self.id = self.OrganizationID
+        id_attr = 'ID' if 'ID' in self.data else 'CustomerID'
+        self.id = self.data[id_attr]
 
     @cached_property
     def contacts(self):
