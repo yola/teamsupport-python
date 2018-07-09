@@ -20,7 +20,6 @@ with open('CHANGELOG.rst') as changelog_file:
 
 requirements = [
     'demands>=4.0.0, < 5.0.0',
-    'lxml>=3.4.4',
     'property-caching>=1.0.3',
     'querylist>=0.2.0',
     'six<2.0.0',
