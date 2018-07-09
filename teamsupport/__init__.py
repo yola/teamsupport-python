@@ -7,7 +7,7 @@ from teamsupport.services import TeamSupportService
 
 __author__ = 'Yola Engineers'
 __email__ = 'engineers@yola.com'
-__version__ = '0.4.1'
+__version__ = '0.5.0'
 
 __all__ = (Action, TeamSupportService, Ticket, config)
 
