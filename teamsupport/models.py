@@ -7,11 +7,13 @@ from teamsupport.services import TeamSupportService
 from teamsupport.errors import MissingArgumentError
 
 
-def _find_dict_by_key_value(list_of_dicts, **kwargs):
+def _find_dict_matching_items(list_of_dicts, **kwargs):
     for dct in list_of_dicts:
         for (key, value) in kwargs.items():
-            if dct.get(key) == value:
-                return dct
+            if dct.get(key) != value:
+                break
+        else:
+            return dct
 
 
 class TSModel(object):
@@ -76,6 +78,7 @@ class Ticket(TSModel):
             'TicketTypeID': ticket_type_id,
             'IsVisibleOnPortal': True,
         }
+        data.update(params)
 
         ticket = Ticket(data=cls.get_client().create_ticket(data))
         ticket.set_description(description)
@@ -94,14 +97,14 @@ class Ticket(TSModel):
     @classmethod
     def _get_ticket_status_id(cls, ticket_type_id, ticket_status_name):
         statuses = cls._get_ticket_statuses()
-        status_dict = _find_dict_by_key_value(
+        status_dict = _find_dict_matching_items(
             statuses, TicketTypeID=ticket_type_id, Name=ticket_status_name)
         return status_dict['ID'] if status_dict else None
 
     @classmethod
     def _get_ticket_type_id(cls, ticket_type_name):
         ticket_types = cls._get_ticket_types()
-        type_dict = _find_dict_by_key_value(
+        type_dict = _find_dict_matching_items(
             ticket_types, Name=ticket_type_name)
         return type_dict['ID'] if type_dict else None
 

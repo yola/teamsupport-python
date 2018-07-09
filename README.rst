@@ -51,7 +51,7 @@ Usage
 Running Tests
 -------------
 
-Set correct data in teasmsupport/config.py
+Set correct data in teamsupport/config.py
 
 ::
 
